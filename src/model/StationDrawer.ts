@@ -1,4 +1,4 @@
-import {Station} from "../model/Station";
+import {Station} from "./Station";
 
 
 declare var ol: any;
