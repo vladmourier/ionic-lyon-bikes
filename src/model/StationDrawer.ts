@@ -72,15 +72,19 @@ export class StationDrawer {
   }
 
   public getOLFeature() {
-    return new ol.Feature(
+    let lng = Math.abs(this.station.lng);
+    let lat = Math.abs(this.station.lat);
+    let feature = new ol.Feature(
       new ol.geom.Point(
         ol.proj.transform(
           [
-            Math.abs(this.station.lng),
+            lng,
             Math.abs(this.station.lat)
           ],
           'EPSG:4326', 'EPSG:3857'))
     );
+    feature.set('number', this.station.number);
+    return feature;
   }
 
   public drawOnSource() {

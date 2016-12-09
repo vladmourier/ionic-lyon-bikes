@@ -1,16 +1,17 @@
 import {Component, ViewChild} from '@angular/core';
-import {Platform} from 'ionic-angular';
+import {Platform, NavController} from 'ionic-angular';
 import {StatusBar, Splashscreen} from 'ionic-native';
 
 import {TabsPage} from '../pages/tabs/tabs';
 import {Station} from "../model/Station";
 import {StationDrawer} from "../model/StationDrawer";
 import {StationService} from "../model/StationService";
+import {StationPage} from "../pages/station/station";
 
 declare var ol: any;
 
 @Component({
-  template: `<ion-nav [root]="rootPage"></ion-nav>`,
+  template: `<ion-nav #myNav [root]="rootPage"></ion-nav>`,
   providers: [StationService]
 })
 export class StationComponent {
@@ -18,6 +19,8 @@ export class StationComponent {
   @ViewChild('map') map;
   stationService: StationService;
   stations: Station[];
+  currentStation: Station;
+  @ViewChild('myNav') nav: NavController;
   errorMessage: string;
 
   constructor(stationService: StationService, platform: Platform) {
@@ -49,7 +52,7 @@ export class StationComponent {
         zoom: 13
       })
     });
-    this.handleClickShowPopUp();
+    // this.handleClickShowPopUp();
     this.addRefreshControl();
   }
 
@@ -71,20 +74,26 @@ export class StationComponent {
    */
   setStationsVectorSource(Stations) {
     console.log("setStations");
+    var self = this;
     this.stations = [];
     let stationsArray = Stations.values;
     let stationDrawer = new StationDrawer();
+    //Dessine les stations sur les différents layers (selon état)
     for (let i = 0, l = stationsArray.length; i < l; i++) {
       let station = new Station(stationsArray[i]);
-      this.stations.push(station);
+      // this.stations.push(station);
+      this.stations[station.number] = station;
       stationDrawer.setStation(station);
       stationDrawer.drawOnSource();
     }
+
+    //Ajoute les layers à la map
     let layers = stationDrawer.getLayers();
     for (let i = 0, l = layers.length; i < l; i++) {
       this.map.addLayer(layers[i]);
     }
 
+    //Création de l'interation permettant la sélection des stations
     let select = new ol.interaction.Select({
       layers: layers,
       style: new ol.style.Style({
@@ -95,8 +104,14 @@ export class StationComponent {
         })
       })
     });
-    this.map.addInteraction(select);
 
+    //Create the select object which handles station features click
+    select.on("select", function (selectedItem) {
+      let stationNumber = selectedItem.selected[0].get("number");
+      self.currentStation = self.stations[stationNumber];
+      self.nav.push(StationPage, self.currentStation);
+    });
+    this.map.addInteraction(select);
   }
 
   /**
@@ -144,7 +159,7 @@ export class StationComponent {
   /**
    * Add a refresh button in order to update stations
    */
-  addRefreshControl(){
+  addRefreshControl() {
     var this_ = this;
     /**
      * @constructor
