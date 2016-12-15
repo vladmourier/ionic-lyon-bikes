@@ -85,6 +85,7 @@ export class StationDrawer {
 
   public drawOnSource() {
     this.sources[this.getStationState()].addFeature(this.getOLFeature());
+    console.log("drawed stations");
   }
 
   public getStylefunction() {
@@ -103,8 +104,7 @@ export class StationDrawer {
     }
 
     if (this.sources.empty.getFeatures().length > 0) {
-      layers.push(new ol.layer.Vector(
-        {
+      layers.push(new ol.layer.Vector({
           source: this.sources.empty,
           style: this.styles.empty['Point']
         })

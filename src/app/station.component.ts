@@ -7,6 +7,10 @@ import {Station} from "../model/Station";
 import {StationDrawer} from "../model/StationDrawer";
 import {StationService} from "../model/StationService";
 
+//import {Geolocation} from 'ionic-native';
+import {UserLocation} from "../model/UserLocation";
+import {UserDrawer} from "../model/UserDrawer";
+
 declare var ol: any;
 
 @Component({
@@ -19,6 +23,7 @@ export class StationComponent {
   stationService: StationService;
   stations: Station[];
   errorMessage: string;
+  userLocation: UserLocation;
 
   constructor(stationService: StationService, platform: Platform) {
     platform.ready().then(() => {
@@ -26,6 +31,7 @@ export class StationComponent {
       Splashscreen.hide();
     });
     this.stationService = stationService;
+    this.userLocation = new UserLocation({});
   }
 
   ngOnInit() {
@@ -51,13 +57,52 @@ export class StationComponent {
     });
     this.handleClickShowPopUp();
     this.addRefreshControl();
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            console.log("ca fait GCP Success");
+            this.userLocation.setLocation(pos.coords);
+            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+        },
+        (err) => {
+            console.log("ca fait GCP Error");
+            console.log(err.message)
+        },
+        {timeout: 5000}
+    );
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            console.log("ca fait GCP Success");
+            this.userLocation.setLocation(pos.coords);
+            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+        },
+        (err) => {
+            console.log("ca fait GCP Error");
+            console.log(err.message)
+        },
+        {timeout: 5000}
+    );
+
+    let watch = navigator.geolocation.watchPosition(
+        (pos) => {
+            console.log("ca fait GCP Success");
+            this.userLocation.setLocation(pos.coords);
+            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+        },
+        (err) => {
+            console.log("ca fait GCP Error");
+            console.log(err.message)
+        },
+        {timeout: 5000}
+    );
   }
 
   /**
    * Get the stations from StationService and treat them accordingly
    */
   requestStations() {
-    console.log("Subscribe");
+    //console.log("Subscribe");
     this.stationService.getStations().subscribe(
       stations => this.setStationsVectorSource(stations),
       error => this.errorMessage = <any>error
@@ -70,7 +115,7 @@ export class StationComponent {
    * @param Stations
    */
   setStationsVectorSource(Stations) {
-    console.log("setStations");
+    //console.log("setStations");
     this.stations = [];
     let stationsArray = Stations.values;
     let stationDrawer = new StationDrawer();
@@ -84,6 +129,12 @@ export class StationComponent {
     for (let i = 0, l = layers.length; i < l; i++) {
       this.map.addLayer(layers[i]);
     }
+
+    console.log("adding and drawing userDrawer");
+    let userDrawer = new UserDrawer();
+    userDrawer.setUserLocation(this.userLocation);
+    userDrawer.drawOnSource();
+    this.map.addLayer(userDrawer.getLayer());
 
     let select = new ol.interaction.Select({
       layers: layers,
@@ -158,7 +209,7 @@ export class StationComponent {
       button.innerHTML = '<ion-icon name="refresh" role="img" class="icon icon-md ion-md-refresh" aria-label="close circle" ng-reflect-name="refresh"></ion-icon>';
 
       let refresh = function () {
-        console.log("refresh");
+        //console.log("refresh");
         while (this_.map.getLayers().getLength() != 1) {
           this_.map.getLayers().pop();
         }
