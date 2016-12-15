@@ -4,13 +4,12 @@ declare var ol: any;
 
 export class UserDrawer {
   userLocation: UserLocation;
-  styles: any;
-  sources: any;
+  style: any;
+  source: any;
   layer: any;
 
   constructor() {
-    this.styles = {
-      'regular': {
+    this.style = {
         'Point': [new ol.style.Style({
           image: new ol.style.Circle({
             radius: 40,
@@ -18,16 +17,13 @@ export class UserDrawer {
             stroke: new ol.style.Stroke({color: 'blue', width: 10})
           })
         })]
-      }
     };
 
-    this.sources = {
-      'regular': new ol.source.Vector()
-    }
+    this.source = new ol.source.Vector()
 
     this.layer = new ol.layer.Vector({
-        source: this.sources.regular,
-        style: this.styles.regular['Point']
+        source: this.source,
+        style: this.style['Point']
     });
   }
 
@@ -48,7 +44,7 @@ export class UserDrawer {
   }
 
   public drawOnSource() {
-    this.sources.regular.addFeature(this.getOLFeature());
+    this.source.addFeature(this.getOLFeature());
     console.log("drawed");
   }
 
