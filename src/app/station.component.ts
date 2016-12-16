@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {Platform, NavController} from 'ionic-angular';
 import {StatusBar, Splashscreen} from 'ionic-native';
-
+import {Storage} from '@ionic/storage'
 import {TabsPage} from '../pages/tabs/tabs';
 import {Station} from "../model/Station";
 import {StationDrawer} from "../model/StationDrawer";
@@ -12,7 +12,7 @@ declare var ol: any;
 
 @Component({
   template: `<ion-nav #myNav [root]="rootPage"></ion-nav>`,
-  providers: [StationService]
+  providers: [StationService, Storage]
 })
 export class StationComponent {
   rootPage = TabsPage;
@@ -22,13 +22,15 @@ export class StationComponent {
   currentStation: Station;
   @ViewChild('myNav') nav: NavController;
   errorMessage: string;
+  private storage: Storage;
 
-  constructor(stationService: StationService, platform: Platform) {
+  constructor(stationService: StationService, storage: Storage, platform: Platform) {
     platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
     });
     this.stationService = stationService;
+    this.storage = storage;
   }
 
   ngOnInit() {
@@ -63,7 +65,7 @@ export class StationComponent {
     console.log("Subscribe");
     this.stationService.getStations().subscribe(
       stations => this.setStationsVectorSource(stations),
-      error => this.errorMessage = <any>error
+      error => this.drawFromLocalStorage(error)
     );
   }
 
@@ -83,15 +85,12 @@ export class StationComponent {
       let station = new Station(stationsArray[i]);
       // this.stations.push(station);
       this.stations[station.number] = station;
-      stationDrawer.setStation(station);
-      stationDrawer.drawOnSource();
+      this.drawStation(station, stationDrawer);
     }
 
     //Ajoute les layers à la map
+    this.addLayersToMap(stationDrawer);
     let layers = stationDrawer.getLayers();
-    for (let i = 0, l = layers.length; i < l; i++) {
-      this.map.addLayer(layers[i]);
-    }
 
     //Création de l'interation permettant la sélection des stations
     let select = new ol.interaction.Select({
@@ -112,6 +111,21 @@ export class StationComponent {
       self.nav.push(StationPage, self.currentStation);
     });
     this.map.addInteraction(select);
+
+
+    //adds the stations to local storage
+    this.storage.set('stations', JSON.stringify(this.stations, function (k, v) {
+      if (v instanceof Array) {
+        var o = {};
+        for (var ind in v) {
+          if (v.hasOwnProperty(ind)) {
+            o[ind] = v[ind];
+          }
+        }
+        return o;
+      }
+      return v;
+    }));
   }
 
   /**
@@ -196,6 +210,36 @@ export class StationComponent {
     ol.inherits(refreshControl, ol.control.Control);
 
     this.map.addControl(new refreshControl({}));
+  }
+
+  drawFromLocalStorage(PrevError) {
+    var self = this;
+    if (PrevError)
+      this.errorMessage = <any>PrevError;
+    this.storage.get('stations').then(function (res) {
+        let stationDrawer = new StationDrawer();
+        self.stations = JSON.parse(res);
+        console.log(self.stations);
+        for (let sta in self.stations)
+          self.drawStation(self.stations[sta], stationDrawer)
+
+        self.addLayersToMap(stationDrawer);
+      }
+    );
+  }
+
+  drawStation(station, stationDrawer) {
+    stationDrawer.setStation(station);
+    stationDrawer.drawOnSource();
+  }
+
+  addLayersToMap(stationDrawer) {
+    //Ajoute les layers à la map
+    let layers = stationDrawer.getLayers();
+    for (let i = 0, l = layers.length; i < l; i++) {
+      console.log(layers[i].getSource().getFeatures());
+      this.map.addLayer(layers[i]);
+    }
   }
 
 }
