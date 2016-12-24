@@ -51,7 +51,9 @@ export class StationComponent {
       overlays: [],
       view: new ol.View({
         center: ol.proj.transform([4.85, 45.75], 'EPSG:4326', 'EPSG:3857'),
-        zoom: 13
+        zoom: 13,
+        minZoom: 10,
+        maxZoom: 20
       })
     });
     // this.handleClickShowPopUp();
