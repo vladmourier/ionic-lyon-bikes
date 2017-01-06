@@ -58,7 +58,7 @@ export class StationDrawer {
   }
 
   private getRadiusAccordingToResolution(resolution){
-    return resolution > 30 ? 30 : Math.max(15, resolution);
+    return resolution > 15 ? 20 : Math.max(15, resolution);
   }
 
   setStation(station: Station) {

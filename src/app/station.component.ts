@@ -15,6 +15,8 @@ declare var ol: any;
   providers: [StationService, Storage]
 })
 export class StationComponent {
+  public static readonly INITIAL_COORDINATES = ol.proj.transform([4.85, 45.75], 'EPSG:4326', 'EPSG:3857');
+  public static readonly INITIAL_ZOOM_LEVEL = 13;
   rootPage = TabsPage;
   @ViewChild('map') map;
   stationService: StationService;
@@ -23,6 +25,7 @@ export class StationComponent {
   @ViewChild('myNav') nav: NavController;
   errorMessage: string;
   private storage: Storage;
+  private view: any;
 
   constructor(stationService: StationService, storage: Storage, platform: Platform) {
     platform.ready().then(() => {
@@ -49,15 +52,15 @@ export class StationComponent {
         new ol.control.ScaleLine(),
       ]),
       overlays: [],
-      view: new ol.View({
-        center: ol.proj.transform([4.85, 45.75], 'EPSG:4326', 'EPSG:3857'),
-        zoom: 13,
+      view: this.view = new ol.View({
+        center: StationComponent.INITIAL_COORDINATES,
+        zoom: StationComponent.INITIAL_ZOOM_LEVEL,
         minZoom: 10,
         maxZoom: 20
       })
     });
-    // this.handleClickShowPopUp();
     this.addRefreshControl();
+    this.addCenterRelocationConrtol();
   }
 
   /**
@@ -82,7 +85,7 @@ export class StationComponent {
     this.stations = [];
     let stationsArray = Stations.values;
     let stationDrawer = new StationDrawer();
-    //Dessine les stations sur les différents layers (selon état)
+    //draws stations on different layers according to their state
     for (let i = 0, l = stationsArray.length; i < l; i++) {
       let station = new Station(stationsArray[i]);
       // this.stations.push(station);
@@ -90,11 +93,11 @@ export class StationComponent {
       this.drawStation(station, stationDrawer);
     }
 
-    //Ajoute les layers à la map
+    //Add the layers to the map
     this.addLayersToMap(stationDrawer);
     let layers = stationDrawer.getLayers();
 
-    //Création de l'interation permettant la sélection des stations
+    //Creates the interaction allowing selecting the stations
     let select = new ol.interaction.Select({
       layers: layers,
       style: new ol.style.Style({
@@ -105,15 +108,15 @@ export class StationComponent {
         })
       })
     });
-
     //Create the select object which handles station features click
     select.on("select", function (selectedItem) {
+      console.log(selectedItem);
       let stationNumber = selectedItem.selected[0].get("number");
       self.currentStation = self.stations[stationNumber];
       self.nav.push(StationPage, self.currentStation);
     });
-    this.map.addInteraction(select);
 
+    this.map.addInteraction(select);
 
     //adds the stations to local storage
     this.storage.set('stations', JSON.stringify(this.stations, function (k, v) {
@@ -128,48 +131,6 @@ export class StationComponent {
       }
       return v;
     }));
-  }
-
-  /**
-   * Show a popup on click
-   */
-  handleClickShowPopUp() {
-    var container = document.getElementById('popup');
-    var content = document.getElementById('popup-content');
-    var closer = document.getElementById('popup-closer');
-
-    /**
-     * Create an overlay to anchor the popup to the map.
-     */
-    var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
-      element: container,
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250
-      }
-    }));
-
-    this.map.addOverlay(overlay);
-
-    /**
-     * Add a click handler to hide the popup.
-     * @return {boolean} Don't follow the href.
-     */
-    closer.onclick = function () {
-      overlay.setPosition(undefined);
-      closer.blur();
-      return false;
-    };
-
-    this.map.on('singleclick', function (evt) {
-      var coordinate = evt.coordinate;
-      var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(
-        coordinate, 'EPSG:3857', 'EPSG:4326'));
-
-      content.innerHTML = '<p>You clicked here:</p><code>' + hdms +
-        '</code>';
-      overlay.setPosition(coordinate);
-    });
   }
 
   /**
@@ -214,6 +175,51 @@ export class StationComponent {
     this.map.addControl(new refreshControl({}));
   }
 
+  /**
+   * Adds a relocate button centering the view on the default coordinates with the default zoom level
+   */
+  addCenterRelocationConrtol() {
+    var self = this;
+    /**
+     * @constructor
+     * @extends {ol.control.Control}
+     * @param {Object=} opt_options Control options.
+     */
+    var relocateControl = function (opt_options) {
+      let options = opt_options || {};
+
+      let button = document.createElement('button');
+      button.innerHTML = '<ion-icon name="locate" role="img" class="icon icon-md ion-md-locate" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
+
+      let relocate = function () {
+        self.view.animate({
+          center: StationComponent.INITIAL_COORDINATES,
+          zoom: StationComponent.INITIAL_ZOOM_LEVEL,
+          duration: 1000
+        });
+      };
+
+      button.addEventListener('click', relocate, false);
+      button.addEventListener('touchstart', relocate, false);
+
+      let element = document.createElement('div');
+      element.className = 'button-relocate ol-unselectable ol-control';
+      element.appendChild(button);
+
+      ol.control.Control.call(this, {
+        element: element,
+        target: options.target
+      });
+    };
+    ol.inherits(relocateControl, ol.control.Control);
+
+    this.map.addControl(new relocateControl({}));
+  }
+
+  /**
+   * Draws the stations from locally stored data
+   * @param PrevError
+   */
   drawFromLocalStorage(PrevError) {
     var self = this;
     if (PrevError)
@@ -221,7 +227,7 @@ export class StationComponent {
     this.storage.get('stations').then(function (res) {
         let stationDrawer = new StationDrawer();
         self.stations = JSON.parse(res);
-        console.log(self.stations);
+        console.log("Stations drawn from local storage");
         for (let sta in self.stations)
           self.drawStation(self.stations[sta], stationDrawer)
 
@@ -239,7 +245,6 @@ export class StationComponent {
     //Ajoute les layers à la map
     let layers = stationDrawer.getLayers();
     for (let i = 0, l = layers.length; i < l; i++) {
-      console.log(layers[i].getSource().getFeatures());
       this.map.addLayer(layers[i]);
     }
   }
