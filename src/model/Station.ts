@@ -48,9 +48,4 @@ export class Station {
       if(object.last_update_fme) this.last_update_fme = object.last_update_fme;
     }
   }
-
-  static getStations(){
-
-  }
-
 }
