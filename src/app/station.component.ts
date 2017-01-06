@@ -31,10 +31,30 @@ export class StationComponent {
       Splashscreen.hide();
     });
     this.stationService = stationService;
-    this.userLocation = new UserLocation({});
   }
 
   ngOnInit() {
+      this.userLocation = new UserLocation({});
+
+      navigator.geolocation.getCurrentPosition( // ou plugin cordova
+          (pos) => {
+              console.log("ca fait GCP Success");
+              this.userLocation.setLocation(pos.coords);
+              console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+
+              console.log("adding and drawing userDrawer");
+              let userDrawer = new UserDrawer();
+              userDrawer.setUserLocation(this.userLocation);
+              userDrawer.drawOnSource();
+              this.map.addLayer(userDrawer.getLayer());
+          },
+          (err) => {
+              console.log("ca fait GCP Error");
+              console.log(err.message)
+          },
+          {timeout: 5000}
+      );
+
     this.requestStations();
   }
 
@@ -57,45 +77,10 @@ export class StationComponent {
     });
     this.handleClickShowPopUp();
     this.addRefreshControl();
+  }
 
-    navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            console.log("ca fait GCP Success");
-            this.userLocation.setLocation(pos.coords);
-            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-        },
-        (err) => {
-            console.log("ca fait GCP Error");
-            console.log(err.message)
-        },
-        {timeout: 5000}
-    );
-
-    navigator.geolocation.getCurrentPosition(
-        (pos) => {
-            console.log("ca fait GCP Success");
-            this.userLocation.setLocation(pos.coords);
-            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-        },
-        (err) => {
-            console.log("ca fait GCP Error");
-            console.log(err.message)
-        },
-        {timeout: 5000}
-    );
-
-    let watch = navigator.geolocation.watchPosition(
-        (pos) => {
-            console.log("ca fait GCP Success");
-            this.userLocation.setLocation(pos.coords);
-            console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-        },
-        (err) => {
-            console.log("ca fait GCP Error");
-            console.log(err.message)
-        },
-        {timeout: 5000}
-    );
+  ionViewDidLoad() {
+      console.log("test");
   }
 
   /**
@@ -129,12 +114,6 @@ export class StationComponent {
     for (let i = 0, l = layers.length; i < l; i++) {
       this.map.addLayer(layers[i]);
     }
-
-    console.log("adding and drawing userDrawer");
-    let userDrawer = new UserDrawer();
-    userDrawer.setUserLocation(this.userLocation);
-    userDrawer.drawOnSource();
-    this.map.addLayer(userDrawer.getLayer());
 
     let select = new ol.interaction.Select({
       layers: layers,
