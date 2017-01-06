@@ -110,7 +110,7 @@ export class StationComponent {
    * @param Stations
    */
   setStationsVectorSource(Stations) {
-    console.log("setStations");
+    //console.log("setStations");
     var self = this;
     this.stations = [];
     let stationsArray = Stations.values;
@@ -262,7 +262,7 @@ export class StationComponent {
     this.storage.get('stations').then(function (res) {
         let stationDrawer = new StationDrawer();
         self.stations = JSON.parse(res);
-        console.log("Stations drawn from local storage");
+        //console.log("Stations drawn from local storage");
         for (let sta in self.stations)
           self.drawStation(self.stations[sta], stationDrawer)
 
