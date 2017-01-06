@@ -2,6 +2,8 @@
  * Created by Vlad on 25/11/2016.
  */
 
+ declare var ol: any;
+
 export class UserLocation {
   lat: number;
   lng: number;
@@ -18,17 +20,20 @@ export class UserLocation {
   }
 
   setLocation(object: any){
-      console.log("setting location");
     if(object) {
-        console.log("from object");
       if(object.latitude) this.lat = object.latitude;
       if(object.longitude) this.lng = object.longitude;
     }
     else {
-        console.log("from default");
         this.lat = 0;
         this.lng = 0;
     }
+  }
+
+  getLocation() {
+      var temp = ol.proj.transform([this.lng, this.lat], 'EPSG:4326', 'EPSG:3857');
+      //console.log(temp)
+      return temp;
   }
 
 }

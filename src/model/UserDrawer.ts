@@ -45,7 +45,6 @@ export class UserDrawer {
 
   public drawOnSource() {
     this.source.addFeature(this.getOLFeature());
-    console.log("drawed");
   }
 
   public getLayer() {

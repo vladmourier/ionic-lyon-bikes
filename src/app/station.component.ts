@@ -43,27 +43,7 @@ export class StationComponent {
   }
 
   ngOnInit() {
-      this.userLocation = new UserLocation({});
-
-      navigator.geolocation.getCurrentPosition( // ou plugin cordova
-          (pos) => {
-              console.log("ca fait GCP Success");
-              this.userLocation.setLocation(pos.coords);
-              console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-
-              console.log("adding and drawing userDrawer");
-              let userDrawer = new UserDrawer();
-              userDrawer.setUserLocation(this.userLocation);
-              userDrawer.drawOnSource();
-              this.map.addLayer(userDrawer.getLayer());
-          },
-          (err) => {
-              console.log("ca fait GCP Error");
-              console.log(err.message)
-          },
-          {timeout: 5000}
-      );
-
+    this.getAndDrawPosition();
     this.requestStations();
   }
 
@@ -81,13 +61,13 @@ export class StationComponent {
       overlays: [],
       view: this.view = new ol.View({
         center: StationComponent.INITIAL_COORDINATES,
-        zoom: StationComponent.INITIAL_ZOOM_LEVEL,
+        zoom: StationComponent.INITIAL_ZOOM_LEVEL/*,
         minZoom: 10,
-        maxZoom: 20
+        maxZoom: 20*/
       })
     });
     this.addRefreshControl();
-    this.addCenterRelocationConrtol();
+    this.addCenterRelocationControl();
   }
 
   ionViewDidLoad() {
@@ -105,6 +85,25 @@ export class StationComponent {
     );
   }
 
+  getAndDrawPosition() {
+      this.userLocation = new UserLocation({});
+      navigator.geolocation.getCurrentPosition( // ou plugin cordova
+          (pos) => {
+              this.userLocation.setLocation(pos.coords);
+              console.log("adding and drawing userDrawer");
+              let userDrawer = new UserDrawer();
+              userDrawer.setUserLocation(this.userLocation);
+              userDrawer.drawOnSource();
+              this.map.addLayer(userDrawer.getLayer());
+          },
+          (err) => {
+              console.log("GCP Error");
+              console.log(err.message)
+          },
+          {timeout: 5000}
+      );
+  }
+
   /**
    * Use the StationArray to draw stations on the map according to their GPS Coordinates and their states.
    * Allow a station to be selected.
@@ -116,6 +115,7 @@ export class StationComponent {
     this.stations = [];
     let stationsArray = Stations.values;
     let stationDrawer = new StationDrawer();
+    console.log("adding and drawing stations");
     //draws stations on different layers according to their state
     for (let i = 0, l = stationsArray.length; i < l; i++) {
       let station = new Station(stationsArray[i]);
@@ -186,6 +186,7 @@ export class StationComponent {
           this_.map.getLayers().pop();
         }
         this_.requestStations();
+        this_.getAndDrawPosition();
       };
 
 
@@ -209,7 +210,7 @@ export class StationComponent {
   /**
    * Adds a relocate button centering the view on the default coordinates with the default zoom level
    */
-  addCenterRelocationConrtol() {
+  addCenterRelocationControl() {
     var self = this;
     /**
      * @constructor
@@ -223,8 +224,11 @@ export class StationComponent {
       button.innerHTML = '<ion-icon name="locate" role="img" class="icon icon-md ion-md-locate" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
 
       let relocate = function () {
+          let temp = self.userLocation.getLocation();
+          //let temp = StationComponent.INITIAL_COORDINATES;
+          //console.log(temp);
         self.view.animate({
-          center: StationComponent.INITIAL_COORDINATES,
+          center: temp,
           zoom: StationComponent.INITIAL_ZOOM_LEVEL,
           duration: 1000
         });
