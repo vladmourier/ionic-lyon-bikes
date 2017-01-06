@@ -14,33 +14,40 @@ export class StationDrawer {
   layers: any;
 
   constructor() {
+    var self = this;
     this.styles = {
       'regular': {
-        'Point': [new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 5,
-            fill: new ol.style.Fill({color: 'white'}),
-            stroke: new ol.style.Stroke({color: 'green', width: 3})
-          })
-        })]
+        'Point': function(feature, resolution){
+          return [new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: self.getRadiusAccordingToResolution(resolution) ,
+              fill: new ol.style.Fill({color: 'white'}),
+              stroke: new ol.style.Stroke({color: 'green', width: 3})
+            })
+          })]
+        }
       },
       'empty': {
-        'Point': [new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 5,
-            fill: null,
-            stroke: new ol.style.Stroke({color: 'black', width: 3})
-          })
-        })]
+        'Point': function(feature, resolution){
+          return [new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: self.getRadiusAccordingToResolution(resolution) ,
+              fill: new ol.style.Fill({color: 'white'}),
+              stroke: new ol.style.Stroke({color: 'black', width: 3})
+            })
+          })]
+        }
       },
       'full': {
-        'Point': [new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 5,
-            fill: null,
-            stroke: new ol.style.Stroke({color: 'red', width: 3})
-          })
-        })]
+        'Point': function(feature, resolution){
+          return [new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: self.getRadiusAccordingToResolution(resolution) ,
+              fill: new ol.style.Fill({color: 'white'}),
+              stroke: new ol.style.Stroke({color: 'red', width: 3})
+            })
+          })]
+        }
       },
     };
     this.sources = {
@@ -48,6 +55,10 @@ export class StationDrawer {
       'full': new ol.source.Vector(),
       'empty': new ol.source.Vector()
     }
+  }
+
+  private getRadiusAccordingToResolution(resolution){
+    return resolution > 15 ? 20 : Math.max(15, resolution);
   }
 
   setStation(station: Station) {
@@ -79,7 +90,7 @@ export class StationDrawer {
         ol.proj.transform(
           [
             lng,
-            Math.abs(this.station.lat)
+            Math.abs(lat)
           ],
           'EPSG:4326', 'EPSG:3857'))
     );

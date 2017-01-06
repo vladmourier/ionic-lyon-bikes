@@ -11,9 +11,9 @@ import {Station} from "../../model/Station";
 })
 export class StationPage {
   public station;
-  public strrr = "TEST BIATCH";
 
   constructor(public navCtrl: NavController, private navParams: NavParams) {
+    console.log("building details page");
     console.log(navParams.get("number"));
 
     this.station = new Station(navParams.data);
