@@ -33,3 +33,7 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 src/assets/ol-debug.js
+.bowerrc
+bower.json
+gulpfile.js
+scss/

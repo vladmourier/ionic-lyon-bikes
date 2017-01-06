@@ -8,6 +8,10 @@ import {StationDrawer} from "../model/StationDrawer";
 import {StationService} from "../model/StationService";
 import {StationPage} from "../pages/station/station";
 
+//import {Geolocation} from 'ionic-native';
+import {UserLocation} from "../model/UserLocation";
+import {UserDrawer} from "../model/UserDrawer";
+
 declare var ol: any;
 
 @Component({
@@ -24,8 +28,10 @@ export class StationComponent {
   currentStation: Station;
   @ViewChild('myNav') nav: NavController;
   errorMessage: string;
+  userLocation: UserLocation;
   private storage: Storage;
   private view: any;
+
 
   constructor(stationService: StationService, storage: Storage, platform: Platform) {
     platform.ready().then(() => {
@@ -37,6 +43,27 @@ export class StationComponent {
   }
 
   ngOnInit() {
+      this.userLocation = new UserLocation({});
+
+      navigator.geolocation.getCurrentPosition( // ou plugin cordova
+          (pos) => {
+              console.log("ca fait GCP Success");
+              this.userLocation.setLocation(pos.coords);
+              console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+
+              console.log("adding and drawing userDrawer");
+              let userDrawer = new UserDrawer();
+              userDrawer.setUserLocation(this.userLocation);
+              userDrawer.drawOnSource();
+              this.map.addLayer(userDrawer.getLayer());
+          },
+          (err) => {
+              console.log("ca fait GCP Error");
+              console.log(err.message)
+          },
+          {timeout: 5000}
+      );
+
     this.requestStations();
   }
 
@@ -63,11 +90,15 @@ export class StationComponent {
     this.addCenterRelocationConrtol();
   }
 
+  ionViewDidLoad() {
+      console.log("test");
+  }
+
   /**
    * Get the stations from StationService and treat them accordingly
    */
   requestStations() {
-    console.log("Subscribe");
+    //console.log("Subscribe");
     this.stationService.getStations().subscribe(
       stations => this.setStationsVectorSource(stations),
       error => this.drawFromLocalStorage(error)
@@ -150,7 +181,7 @@ export class StationComponent {
       button.innerHTML = '<ion-icon name="refresh" role="img" class="icon icon-md ion-md-refresh" aria-label="close circle" ng-reflect-name="refresh"></ion-icon>';
 
       let refresh = function () {
-        console.log("refresh");
+        //console.log("refresh");
         while (this_.map.getLayers().getLength() != 1) {
           this_.map.getLayers().pop();
         }
