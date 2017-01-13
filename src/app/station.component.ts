@@ -12,6 +12,8 @@ import {StationPage} from "../pages/station/station";
 import {UserLocation} from "../model/UserLocation";
 import {UserDrawer} from "../model/UserDrawer";
 
+import {ClosestDrawer} from "../model/ClosestDrawer";
+
 declare var ol: any;
 
 @Component({
@@ -43,7 +45,6 @@ export class StationComponent {
   }
 
   ngOnInit() {
-    this.getAndDrawPosition();
     this.requestStations();
   }
 
@@ -80,8 +81,14 @@ export class StationComponent {
   requestStations() {
     //console.log("Subscribe");
     this.stationService.getStations().subscribe(
-      stations => this.setStationsVectorSource(stations),
-      error => this.drawFromLocalStorage(error)
+      stations => {
+          this.setStationsVectorSource(stations)
+          this.getAndDrawPosition();
+      },
+      error => {
+          this.drawFromLocalStorage(error)
+          this.getAndDrawPosition();
+      }
     );
   }
 
@@ -90,11 +97,12 @@ export class StationComponent {
       navigator.geolocation.getCurrentPosition( // ou plugin cordova
           (pos) => {
               this.userLocation.setLocation(pos.coords);
-              console.log("adding and drawing userDrawer");
               let userDrawer = new UserDrawer();
               userDrawer.setUserLocation(this.userLocation);
               userDrawer.drawOnSource();
               this.map.addLayer(userDrawer.getLayer());
+              console.log("finished drawind user");
+              this.drawClosestStation();
           },
           (err) => {
               console.log("GCP Error");
@@ -102,6 +110,25 @@ export class StationComponent {
           },
           {timeout: 5000}
       );
+  }
+
+  drawClosestStation() {
+      var closest = this.stations[0];
+      var minDist = this.userLocation.distanceTo(this.stations[0]);
+      console.log(this.stations);
+      console.log(this.userLocation);
+      for (let sta in this.stations) {
+          var dist = this.userLocation.distanceTo(this.stations[sta]);
+          if (typeof closest == "undefined" || dist < minDist) {
+            closest = this.stations[sta];
+            minDist = dist;
+        }
+    }
+      console.log(closest);
+      let closestDrawer = new ClosestDrawer();
+      closestDrawer.setStation(closest);
+      closestDrawer.drawOnSource();
+      this.map.addLayer(closestDrawer.getLayer());
   }
 
   /**
@@ -115,7 +142,6 @@ export class StationComponent {
     this.stations = [];
     let stationsArray = Stations.values;
     let stationDrawer = new StationDrawer();
-    console.log("adding and drawing stations");
     //draws stations on different layers according to their state
     for (let i = 0, l = stationsArray.length; i < l; i++) {
       let station = new Station(stationsArray[i]);
@@ -127,6 +153,7 @@ export class StationComponent {
     //Add the layers to the map
     this.addLayersToMap(stationDrawer);
     let layers = stationDrawer.getLayers();
+    console.log("finished drawind stations");
 
     //Creates the interaction allowing selecting the stations
     let select = new ol.interaction.Select({

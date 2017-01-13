@@ -36,6 +36,36 @@ export class UserLocation {
       return temp;
   }
 
+  public distanceTo(object: any){
+      if(object) {
+          var lat1 = this.lat;
+          var lat2 = object.lat;
+          var lon1 = this.lng;
+          var lon2 = object.lng;
+          var R = 6371e3; // metres
+          var φ1 = this.toRadians(lat1);
+          var φ2 = this.toRadians(lat2);
+          var Δφ = this.toRadians(lat2-lat1);
+          var Δλ = this.toRadians(lon2-lon1);
+
+          var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+          var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+          var d = R * c;
+
+          return d;
+      }
+      else {
+          return 0;
+      }
+  }
+
+  toRadians(angle) {
+      return angle * (Math.PI / 180);
+  }
+
 }
 
 /*

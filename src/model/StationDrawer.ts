@@ -100,7 +100,6 @@ export class StationDrawer {
 
   public drawOnSource() {
     this.sources[this.getStationState()].addFeature(this.getOLFeature());
-    console.log("drawed stations");
   }
 
   public getStylefunction() {
