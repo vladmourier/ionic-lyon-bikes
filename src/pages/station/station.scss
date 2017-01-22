@@ -4,6 +4,21 @@ page-detail {
     font-weight:bold;
     font-size: larger;
     color: #ffffff;
+
+    ion-item{
+      background-color: inherit;
+      border: none inherit;
+      color: #ffffff;
+      ion-thumbnail{
+        img{
+          padding-top: 20px;
+        }
+      }
+    }
+
+    #header > .item-inner{
+      border-bottom: none;
+    }
   }
 
   .row {

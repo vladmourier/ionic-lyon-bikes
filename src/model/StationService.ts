@@ -5,17 +5,27 @@ import {Injectable}     from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable}     from 'rxjs/Observable';
 import 'rxjs/Rx';
+import {Station} from "./Station";
 
 @Injectable()
 export class StationService {
+  private static _stations: Station[];
   private stationsUrl = 'https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json';  // URL to web API
   constructor(private http: Http) {
   }
 
-  getStations(): Observable<any> {
+  requestStations(): Observable<any> {
     return this.http.get(this.stationsUrl)
       .map(this.extractData)
       .catch(this.handleError);
+  }
+
+  static get stations(): Station[] {
+    return this._stations;
+  }
+
+  static set stations(value: Station[]) {
+    this._stations = value;
   }
 
   private extractData(res: Response) {
