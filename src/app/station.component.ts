@@ -16,53 +16,50 @@ declare var ol: any;
 
 @Component({
   template: `<ion-nav #myNav [root]="rootPage"></ion-nav>`,
-  providers: [StationService, Storage]
+  providers: [Storage]
 })
 export class StationComponent {
+  public static stationToGo: Station;
   public static readonly INITIAL_COORDINATES = ol.proj.transform([4.85, 45.75], 'EPSG:4326', 'EPSG:3857');
   public static readonly INITIAL_ZOOM_LEVEL = 13;
   rootPage = TabsPage;
   @ViewChild('map') map;
-  stationService: StationService;
   stations: Station[];
   currentStation: Station;
   @ViewChild('myNav') nav: NavController;
   errorMessage: string;
   userLocation: UserLocation;
-  private storage: Storage;
   private view: any;
 
 
-  constructor(stationService: StationService, storage: Storage, platform: Platform) {
+  constructor(public stationService: StationService, public storage: Storage, platform: Platform) {
     platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
     });
-    this.stationService = stationService;
-    this.storage = storage;
   }
 
   ngOnInit() {
-      this.userLocation = new UserLocation({});
+    this.userLocation = new UserLocation({});
 
-      navigator.geolocation.getCurrentPosition( // ou plugin cordova
-          (pos) => {
-              console.log("ca fait GCP Success");
-              this.userLocation.setLocation(pos.coords);
-              console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
+    navigator.geolocation.getCurrentPosition( // ou plugin cordova
+      (pos) => {
+        // console.log("ca fait GCP Success");
+        this.userLocation.setLocation(pos.coords);
+        // console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
 
-              console.log("adding and drawing userDrawer");
-              let userDrawer = new UserDrawer();
-              userDrawer.setUserLocation(this.userLocation);
-              userDrawer.drawOnSource();
-              this.map.addLayer(userDrawer.getLayer());
-          },
-          (err) => {
-              console.log("ca fait GCP Error");
-              console.log(err.message)
-          },
-          {timeout: 5000}
-      );
+        // console.log("adding and drawing userDrawer");
+        let userDrawer = new UserDrawer();
+        userDrawer.setUserLocation(this.userLocation);
+        userDrawer.drawOnSource();
+        this.map.addLayer(userDrawer.getLayer());
+      },
+      (err) => {
+        // console.log("ca fait GCP Error");
+        console.log(err.message)
+      },
+      {timeout: 5000}
+    );
 
     this.requestStations();
   }
@@ -87,11 +84,7 @@ export class StationComponent {
       })
     });
     this.addRefreshControl();
-    this.addCenterRelocationConrtol();
-  }
-
-  ionViewDidLoad() {
-      console.log("test");
+    this.addCenterRelocationControl();
   }
 
   /**
@@ -99,7 +92,7 @@ export class StationComponent {
    */
   requestStations() {
     //console.log("Subscribe");
-    this.stationService.getStations().subscribe(
+    this.stationService.requestStations().subscribe(
       stations => this.setStationsVectorSource(stations),
       error => this.drawFromLocalStorage(error)
     );
@@ -111,7 +104,7 @@ export class StationComponent {
    * @param Stations
    */
   setStationsVectorSource(Stations) {
-    console.log("setStations");
+    // console.log("setStations");
     var self = this;
     this.stations = [];
     let stationsArray = Stations.values;
@@ -124,30 +117,26 @@ export class StationComponent {
       this.drawStation(station, stationDrawer);
     }
 
+    //Sets the service array for future use
+    StationService.stations = this.stations;
+
     //Add the layers to the map
     this.addLayersToMap(stationDrawer);
-    let layers = stationDrawer.getLayers();
 
-    //Creates the interaction allowing selecting the stations
-    let select = new ol.interaction.Select({
-      layers: layers,
-      style: new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 10,
-          fill: null,
-          stroke: new ol.style.Stroke({color: 'purple', width: 4})
-        })
-      })
+    //Setup click selection of the stations
+    this.map.on('click', function (event) {
+      let clickedStations = [];
+      self.map.forEachFeatureAtPixel(event.pixel,
+        function (feature, layer) {
+          let stationNumber = feature.get("number");
+          if (typeof stationNumber !== "undefined")
+            clickedStations.push(self.stations[stationNumber]);//Store clicked stations
+        });
+      if (clickedStations.length > 0) {
+        self.currentStation = clickedStations[clickedStations.length > 1 ? Math.floor(Math.random() * clickedStations.length) : 0];//Render one randomly
+        self.nav.push(StationPage, self.currentStation);
+      }
     });
-    //Create the select object which handles station features click
-    select.on("select", function (selectedItem) {
-      console.log(selectedItem);
-      let stationNumber = selectedItem.selected[0].get("number");
-      self.currentStation = self.stations[stationNumber];
-      self.nav.push(StationPage, self.currentStation);
-    });
-
-    this.map.addInteraction(select);
 
     //adds the stations to local storage
     this.storage.set('stations', JSON.stringify(this.stations, function (k, v) {
@@ -209,7 +198,7 @@ export class StationComponent {
   /**
    * Adds a relocate button centering the view on the default coordinates with the default zoom level
    */
-  addCenterRelocationConrtol() {
+  addCenterRelocationControl() {
     var self = this;
     /**
      * @constructor
@@ -258,6 +247,10 @@ export class StationComponent {
     this.storage.get('stations').then(function (res) {
         let stationDrawer = new StationDrawer();
         self.stations = JSON.parse(res);
+
+        //Sets the service array for future use
+        StationService.stations = this._stations;
+
         console.log("Stations drawn from local storage");
         for (let sta in self.stations)
           self.drawStation(self.stations[sta], stationDrawer)
@@ -279,5 +272,4 @@ export class StationComponent {
       this.map.addLayer(layers[i]);
     }
   }
-
 }

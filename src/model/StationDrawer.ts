@@ -23,7 +23,7 @@ export class StationDrawer {
               radius: self.getRadiusAccordingToResolution(resolution) ,
               fill: new ol.style.Fill({color: 'white'}),
               stroke: new ol.style.Stroke({color: 'green', width: 3})
-            })
+          })
           })]
         }
       },
@@ -51,14 +51,20 @@ export class StationDrawer {
       },
     };
     this.sources = {
-      'regular': new ol.source.Vector(),
-      'full': new ol.source.Vector(),
-      'empty': new ol.source.Vector()
+      'regular': new ol.source.Vector({
+        zIndex: 100
+      }),
+      'full': new ol.source.Vector({
+        zIndex: 100
+      }),
+      'empty': new ol.source.Vector({
+        zIndex: 100
+      })
     }
   }
 
   private getRadiusAccordingToResolution(resolution){
-    return resolution > 15 ? 20 : Math.max(15, resolution);
+    return resolution > 15 ? 15 : Math.max(8, resolution*0.5);
   }
 
   setStation(station: Station) {

@@ -12,7 +12,7 @@ export class UserDrawer {
     this.style = {
         'Point': [new ol.style.Style({
           image: new ol.style.Circle({
-            radius: 40,
+            radius: 4,
             fill: null,
             stroke: new ol.style.Stroke({color: 'blue', width: 10})
           })
@@ -23,7 +23,8 @@ export class UserDrawer {
 
     this.layer = new ol.layer.Vector({
         source: this.source,
-        style: this.style['Point']
+        style: this.style['Point'],
+        zIndex: 1
     });
   }
 
