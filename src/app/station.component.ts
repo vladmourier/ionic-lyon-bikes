@@ -3,14 +3,15 @@ import {Platform, NavController} from 'ionic-angular';
 import {StatusBar, Splashscreen} from 'ionic-native';
 import {Storage} from '@ionic/storage'
 import {TabsPage} from '../pages/tabs/tabs';
-import {Station} from "../model/Station";
-import {StationDrawer} from "../model/StationDrawer";
-import {StationService} from "../model/StationService";
+import {Station} from "../model/station/Station";
+import {StationDrawer} from "../model/station/StationDrawer";
+import {StationService} from "../model/station/StationService";
 import {StationPage} from "../pages/station/station";
 
 //import {Geolocation} from 'ionic-native';
-import {UserLocation} from "../model/UserLocation";
-import {UserDrawer} from "../model/UserDrawer";
+import {UserLocation} from "../model/user/UserLocation";
+import {UserDrawer} from "../model/user/UserDrawer";
+import {BikeTrackService} from "../model/tracks/BikeTrackService";
 
 declare var ol: any;
 
@@ -32,7 +33,7 @@ export class StationComponent {
   private view: any;
 
 
-  constructor(public stationService: StationService, public storage: Storage, platform: Platform) {
+  constructor(public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, platform: Platform) {
     platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
@@ -62,6 +63,7 @@ export class StationComponent {
     );
 
     this.requestStations();
+    this.requestBikeTracks();
   }
 
   ngAfterViewInit() {
@@ -79,8 +81,8 @@ export class StationComponent {
       view: this.view = new ol.View({
         center: StationComponent.INITIAL_COORDINATES,
         zoom: StationComponent.INITIAL_ZOOM_LEVEL,
-        minZoom: 10,
-        maxZoom: 20
+        // minZoom: 10,
+        // maxZoom: 20
       })
     });
     this.addRefreshControl();
@@ -90,7 +92,7 @@ export class StationComponent {
   /**
    * Get the stations from StationService and treat them accordingly
    */
-  requestStations() {
+  private requestStations() {
     //console.log("Subscribe");
     this.stationService.requestStations().subscribe(
       stations => this.setStationsVectorSource(stations),
@@ -99,11 +101,34 @@ export class StationComponent {
   }
 
   /**
+   * Gets the tracks information and treat them accordingly
+   */
+  private requestBikeTracks() {
+    this.bikeTrackService.requestTracks().subscribe(
+      tracksFeatureCollection => {
+        this.map.addLayer(new ol.layer.Vector({
+          source: new ol.source.Vector({
+            features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(tracksFeatureCollection),
+          }),
+          style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+              color: 'purple',
+              width: 3
+            })
+          })
+        }));
+      },
+      error => {
+      }
+    )
+  }
+
+  /**
    * Use the StationArray to draw stations on the map according to their GPS Coordinates and their states.
    * Allow a station to be selected.
    * @param Stations
    */
-  setStationsVectorSource(Stations) {
+  private setStationsVectorSource(Stations) {
     // console.log("setStations");
     var self = this;
     this.stations = [];
@@ -156,7 +181,7 @@ export class StationComponent {
   /**
    * Add a refresh button in order to update stations
    */
-  addRefreshControl() {
+  private addRefreshControl() {
     var this_ = this;
     /**
      * @constructor
@@ -198,7 +223,7 @@ export class StationComponent {
   /**
    * Adds a relocate button centering the view on the default coordinates with the default zoom level
    */
-  addCenterRelocationControl() {
+  private addCenterRelocationControl() {
     var self = this;
     /**
      * @constructor
@@ -240,7 +265,7 @@ export class StationComponent {
    * Draws the stations from locally stored data
    * @param PrevError
    */
-  drawFromLocalStorage(PrevError) {
+  private drawFromLocalStorage(PrevError) {
     var self = this;
     if (PrevError)
       this.errorMessage = <any>PrevError;
@@ -249,7 +274,7 @@ export class StationComponent {
         self.stations = JSON.parse(res);
 
         //Sets the service array for future use
-        StationService.stations = this._stations;
+        StationService.stations = self.stations;
 
         console.log("Stations drawn from local storage");
         for (let sta in self.stations)
@@ -260,12 +285,12 @@ export class StationComponent {
     );
   }
 
-  drawStation(station, stationDrawer) {
+  private drawStation(station, stationDrawer) {
     stationDrawer.setStation(station);
     stationDrawer.drawOnSource();
   }
 
-  addLayersToMap(stationDrawer) {
+  private addLayersToMap(stationDrawer) {
     //Ajoute les layers à la map
     let layers = stationDrawer.getLayers();
     for (let i = 0, l = layers.length; i < l; i++) {

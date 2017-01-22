@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {Station} from "../../model/Station";
-import {StationService} from "../../model/StationService";
+import {Station} from "../../model/station/Station";
+import {StationService} from "../../model/station/StationService";
 import {NavController} from "ionic-angular";
 import {StationComponent} from "../../app/station.component";
 
