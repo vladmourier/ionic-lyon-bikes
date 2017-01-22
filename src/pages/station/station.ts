@@ -1,6 +1,6 @@
 import {NavController, NavParams} from "ionic-angular";
 import {Component} from "@angular/core";
-import {Station} from "../../model/Station";
+import {Station} from "../../model/station/Station";
 /**
  * Created by Vlad on 09/12/2016.
  */

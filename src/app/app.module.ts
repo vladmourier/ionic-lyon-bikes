@@ -7,7 +7,8 @@ import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import {StationPage} from "../pages/station/station";
-import {StationService} from "../model/StationService";
+import {StationService} from "../model/station/StationService";
+import {BikeTrackService} from "../model/tracks/BikeTrackService";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {StationService} from "../model/StationService";
     TabsPage
   ],
   providers: [
-    StationService
+    StationService,
+    BikeTrackService
   ]
 })
 export class AppModule {}

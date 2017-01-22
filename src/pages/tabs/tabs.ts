@@ -4,7 +4,7 @@ import { HomePage } from '../home/home';
 import { AboutPage } from '../about/about';
 import { ContactPage } from '../contact/contact';
 import {SearchPage} from "../search/search";
-import {StationService} from "../../model/StationService";
+import {StationService} from "../../model/station/StationService";
 import {StationComponent} from "../../app/station.component";
 
 @Component({
