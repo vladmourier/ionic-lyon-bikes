@@ -1,11 +1,11 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Rechercher</ion-title>
+    <ion-title>Recherche de station</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+  <ion-searchbar (ionInput)="getItems($event)" placeholder="Nom de la station ou de la commune"></ion-searchbar>
   <ion-list>
     <ion-item *ngFor="let station of stations" (click)="jumpToStation($event)">
       {{ station.name }}

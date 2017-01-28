@@ -80,10 +80,11 @@ export class StationDrawer {
   }
 
   private getStationState() {
+    if(this.station.available_bike_stands === 0 || this.station.available_bikes === 0){
+      return EMPTY;
+    }
     if (this.station.available_bikes === this.station.available_bike_stands) {
       return FULL;
-    } else if (this.station.available_bikes === 0) {
-      return EMPTY;
     }
     return REGULAR;
   }

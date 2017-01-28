@@ -25,7 +25,7 @@
       <span class="field">Vélos en réparation</span>
       <span class="value"> {{station.bike_stands - station.available_bike_stands - station.available_bikes}}</span>
     </ion-item>
-    <ion-item class="row" *ngIf="station.pole">
+    <ion-item class="row" *ngIf="station.pole && station.pole != 'None'">
       <span class="field">A proximité de</span>
       <span class="value">{{station.pole}}</span>
     </ion-item>

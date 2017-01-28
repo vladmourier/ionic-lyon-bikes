@@ -112,13 +112,15 @@ export class StationComponent {
           }),
           style: new ol.style.Style({
             stroke: new ol.style.Stroke({
-              color: 'purple',
+              color: '#007A33',
               width: 3
-            })
+            }),
+            zIndex: 0
           })
         }));
       },
       error => {
+        //TODO : load from localStorage
       }
     )
   }
