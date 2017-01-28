@@ -1,4 +1,4 @@
-import {Station} from "./Station"
+import {Station} from "./station/Station"
 
 declare var ol: any;
 

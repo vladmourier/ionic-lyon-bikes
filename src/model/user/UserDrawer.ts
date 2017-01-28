@@ -18,12 +18,22 @@ export class UserDrawer {
         })
       })]
 }};
+    this.style = {
+        'Point': [new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 4,
+            fill: null,
+            stroke: new ol.style.Stroke({color: 'blue', width: 10})
+          })
+        })]
+    };
 
     this.source = new ol.source.Vector()
 
     this.layer = new ol.layer.Vector({
         source: this.source,
-        style: this.style['Point']
+        style: this.style['Point'],
+        zIndex: 1
     });
   }
 
