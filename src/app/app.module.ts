@@ -3,7 +3,7 @@ import { IonicApp, IonicModule } from 'ionic-angular';
 import { StationComponent } from './station.component';
 import { AboutPage } from '../pages/about/about';
 import { SearchPage } from '../pages/search/search';
-import { ContactPage } from '../pages/contact/contact';
+import { AnalyticsPage } from '../pages/analytics/analytics';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import {StationPage} from "../pages/station/station";
@@ -15,7 +15,7 @@ import {BikeTrackService} from "../model/tracks/BikeTrackService";
     StationComponent,
     AboutPage,
     SearchPage,
-    ContactPage,
+    AnalyticsPage,
     HomePage,
     StationPage,
     TabsPage
@@ -28,7 +28,7 @@ import {BikeTrackService} from "../model/tracks/BikeTrackService";
     StationComponent,
     AboutPage,
     SearchPage,
-    ContactPage,
+    AnalyticsPage,
     HomePage,
     StationPage,
     TabsPage
