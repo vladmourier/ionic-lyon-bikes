@@ -34,7 +34,6 @@ export class StationComponent {
   userLocation: UserLocation;
   private view: any;
 
-
   constructor(public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, platform: Platform) {
     platform.ready().then(() => {
       StatusBar.styleDefault();
@@ -43,29 +42,9 @@ export class StationComponent {
   }
 
   ngOnInit() {
-    this.userLocation = new UserLocation({});
-
-    navigator.geolocation.getCurrentPosition( // ou plugin cordova
-      (pos) => {
-        // console.log("ca fait GCP Success");
-        this.userLocation.setLocation(pos.coords);
-        // console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-
-        // console.log("adding and drawing userDrawer");
-        let userDrawer = new UserDrawer();
-        userDrawer.setUserLocation(this.userLocation);
-        userDrawer.drawOnSource();
-        this.map.addLayer(userDrawer.getLayer());
-      },
-      (err) => {
-        // console.log("ca fait GCP Error");
-        console.log(err.message)
-      },
-      {timeout: 5000}
-    );
-
     this.requestStations();
     this.requestBikeTracks();
+    this.getAndDrawPosition();
   }
 
   ngAfterViewInit() {
@@ -117,11 +96,11 @@ export class StationComponent {
         userDrawer.setUserLocation(this.userLocation);
         userDrawer.drawOnSource();
         this.map.addLayer(userDrawer.getLayer());
-        console.log("finished drawind user");
+        userDrawer.getLayer().setZIndex(20);
         this.drawClosestStation();
       },
       (err) => {
-        console.log("GCP Error");
+        //console.log("GCP Error");
         console.log(err.message)
       },
       { timeout: 5000 }
@@ -131,8 +110,6 @@ export class StationComponent {
   drawClosestStation() {
     var closest = this.stations[0];
     var minDist = this.userLocation.distanceTo(this.stations[0]);
-    console.log(this.stations);
-    console.log(this.userLocation);
     for (let sta in this.stations) {
       var dist = this.userLocation.distanceTo(this.stations[sta]);
       if (typeof closest == "undefined" || dist < minDist) {
@@ -140,11 +117,11 @@ export class StationComponent {
         minDist = dist;
       }
     }
-    console.log(closest);
     let closestDrawer = new ClosestDrawer();
     closestDrawer.setStation(closest);
     closestDrawer.drawOnSource();
     this.map.addLayer(closestDrawer.getLayer());
+    closestDrawer.getLayer().setZIndex(10);
   }
 
   /**
