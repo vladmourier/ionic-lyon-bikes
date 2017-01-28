@@ -72,7 +72,7 @@ export class StationComponent {
   }
 
   ionViewDidLoad() {
-      console.log("test");
+    console.log("test");
   }
 
   /**
@@ -82,53 +82,53 @@ export class StationComponent {
     //console.log("Subscribe");
     this.stationService.getStations().subscribe(
       stations => {
-          this.setStationsVectorSource(stations)
-          this.getAndDrawPosition();
+        this.setStationsVectorSource(stations)
+        this.getAndDrawPosition();
       },
       error => {
-          this.drawFromLocalStorage(error)
-          this.getAndDrawPosition();
+        this.drawFromLocalStorage(error)
+        this.getAndDrawPosition();
       }
     );
   }
 
   getAndDrawPosition() {
-      this.userLocation = new UserLocation({});
-      navigator.geolocation.getCurrentPosition( // ou plugin cordova
-          (pos) => {
-              this.userLocation.setLocation(pos.coords);
-              let userDrawer = new UserDrawer();
-              userDrawer.setUserLocation(this.userLocation);
-              userDrawer.drawOnSource();
-              this.map.addLayer(userDrawer.getLayer());
-              console.log("finished drawind user");
-              this.drawClosestStation();
-          },
-          (err) => {
-              console.log("GCP Error");
-              console.log(err.message)
-          },
-          {timeout: 5000}
-      );
+    this.userLocation = new UserLocation({});
+    navigator.geolocation.getCurrentPosition( // ou plugin cordova
+      (pos) => {
+        this.userLocation.setLocation(pos.coords);
+        let userDrawer = new UserDrawer();
+        userDrawer.setUserLocation(this.userLocation);
+        userDrawer.drawOnSource();
+        this.map.addLayer(userDrawer.getLayer());
+        console.log("finished drawind user");
+        this.drawClosestStation();
+      },
+      (err) => {
+        console.log("GCP Error");
+        console.log(err.message)
+      },
+      { timeout: 5000 }
+    );
   }
 
   drawClosestStation() {
-      var closest = this.stations[0];
-      var minDist = this.userLocation.distanceTo(this.stations[0]);
-      console.log(this.stations);
-      console.log(this.userLocation);
-      for (let sta in this.stations) {
-          var dist = this.userLocation.distanceTo(this.stations[sta]);
-          if (typeof closest == "undefined" || dist < minDist) {
-            closest = this.stations[sta];
-            minDist = dist;
-        }
+    var closest = this.stations[0];
+    var minDist = this.userLocation.distanceTo(this.stations[0]);
+    console.log(this.stations);
+    console.log(this.userLocation);
+    for (let sta in this.stations) {
+      var dist = this.userLocation.distanceTo(this.stations[sta]);
+      if (typeof closest == "undefined" || dist < minDist) {
+        closest = this.stations[sta];
+        minDist = dist;
+      }
     }
-      console.log(closest);
-      let closestDrawer = new ClosestDrawer();
-      closestDrawer.setStation(closest);
-      closestDrawer.drawOnSource();
-      this.map.addLayer(closestDrawer.getLayer());
+    console.log(closest);
+    let closestDrawer = new ClosestDrawer();
+    closestDrawer.setStation(closest);
+    closestDrawer.drawOnSource();
+    this.map.addLayer(closestDrawer.getLayer());
   }
 
   /**
@@ -153,7 +153,8 @@ export class StationComponent {
     //Add the layers to the map
     this.addLayersToMap(stationDrawer);
     let layers = stationDrawer.getLayers();
-    console.log("finished drawind stations");
+
+
 
     //Creates the interaction allowing selecting the stations
     let select = new ol.interaction.Select({
@@ -162,12 +163,12 @@ export class StationComponent {
         image: new ol.style.Circle({
           radius: 10,
           fill: null,
-          stroke: new ol.style.Stroke({color: 'purple', width: 4})
+          stroke: new ol.style.Stroke({ color: 'purple', width: 4 })
         })
       })
     });
     //Create the select object which handles station features click
-    select.on("select", function (selectedItem) {
+    select.on("select", function(selectedItem) {
       console.log(selectedItem);
       let stationNumber = selectedItem.selected[0].get("number");
       self.currentStation = self.stations[stationNumber];
@@ -177,7 +178,7 @@ export class StationComponent {
     this.map.addInteraction(select);
 
     //adds the stations to local storage
-    this.storage.set('stations', JSON.stringify(this.stations, function (k, v) {
+    this.storage.set('stations', JSON.stringify(this.stations, function(k, v) {
       if (v instanceof Array) {
         var o = {};
         for (var ind in v) {
@@ -201,13 +202,13 @@ export class StationComponent {
      * @extends {ol.control.Control}
      * @param {Object=} opt_options Control options.
      */
-    var refreshControl = function (opt_options) {
+    var refreshControl = function(opt_options) {
       let options = opt_options || {};
 
       let button = document.createElement('button');
       button.innerHTML = '<ion-icon name="refresh" role="img" class="icon icon-md ion-md-refresh" aria-label="close circle" ng-reflect-name="refresh"></ion-icon>';
 
-      let refresh = function () {
+      let refresh = function() {
         //console.log("refresh");
         while (this_.map.getLayers().getLength() != 1) {
           this_.map.getLayers().pop();
@@ -244,16 +245,16 @@ export class StationComponent {
      * @extends {ol.control.Control}
      * @param {Object=} opt_options Control options.
      */
-    var relocateControl = function (opt_options) {
+    var relocateControl = function(opt_options) {
       let options = opt_options || {};
 
       let button = document.createElement('button');
       button.innerHTML = '<ion-icon name="locate" role="img" class="icon icon-md ion-md-locate" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
 
-      let relocate = function () {
-          let temp = self.userLocation.getLocation();
-          //let temp = StationComponent.INITIAL_COORDINATES;
-          //console.log(temp);
+      let relocate = function() {
+        let temp = self.userLocation.getLocation();
+        //let temp = StationComponent.INITIAL_COORDINATES;
+        //console.log(temp);
         self.view.animate({
           center: temp,
           zoom: StationComponent.INITIAL_ZOOM_LEVEL,
@@ -286,15 +287,15 @@ export class StationComponent {
     var self = this;
     if (PrevError)
       this.errorMessage = <any>PrevError;
-    this.storage.get('stations').then(function (res) {
-        let stationDrawer = new StationDrawer();
-        self.stations = JSON.parse(res);
-        //console.log("Stations drawn from local storage");
-        for (let sta in self.stations)
-          self.drawStation(self.stations[sta], stationDrawer)
+    this.storage.get('stations').then(function(res) {
+      let stationDrawer = new StationDrawer();
+      self.stations = JSON.parse(res);
+      //console.log("Stations drawn from local storage");
+      for (let sta in self.stations)
+        self.drawStation(self.stations[sta], stationDrawer)
 
-        self.addLayersToMap(stationDrawer);
-      }
+      self.addLayersToMap(stationDrawer);
+    }
     );
   }
 
@@ -308,6 +309,7 @@ export class StationComponent {
     let layers = stationDrawer.getLayers();
     for (let i = 0, l = layers.length; i < l; i++) {
       this.map.addLayer(layers[i]);
+      layers[i].setZIndex(10);
     }
   }
 
