@@ -1,0 +1,46 @@
+page-detail {
+  .station-navbar{
+    text-align: center;
+    font-weight:bold;
+    font-size: larger;
+    color: #ffffff;
+  }
+
+  .row {
+    .value {
+      float: right;
+      position: relative;
+    }
+  }
+
+
+  .extras-grid {
+    ion-col {
+      p {
+        font-size: larger;
+      }
+      ion-icon{
+        font-size: larger;
+      }
+    }
+
+  }
+  .icon-valid{
+    color: #21b94e;
+  }
+
+  .icon-invalid{
+    color: #8f8f8f;
+  }
+
+  .last-update{
+    text-align: center;
+    font-size: larger;
+
+  }
+
+  .address-second{
+    color: #8f8f8f;
+    padding-left: 17px;
+  }
+}

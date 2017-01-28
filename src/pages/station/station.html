@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Station</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-navbar [color]="'primary'" class="station-navbar">{{station.number}} - {{station.name}} ({{station.commune}})
+  </ion-navbar>
+  <ion-list>
+    <ion-item class="row">
+      <span class="field">Places disponibles</span>
+      <span class="value">{{station.available_bike_stands}}</span>
+    </ion-item>
+    <ion-item class="row">
+      <span class="field">Vélos disponibles</span>
+      <span class="value"> {{station.available_bikes}}</span>
+    </ion-item>
+    <ion-item class="row" *ngIf="station.bike_stands - station.available_bike_stands - station.available_bikes != 0">
+      <span class="field">Vélos en réparation</span>
+      <span class="value"> {{station.bike_stands - station.available_bike_stands - station.available_bikes}}</span>
+    </ion-item>
+    <ion-item class="row" *ngIf="station.pole">
+      <span class="field">A proximité de</span>
+      <span class="value">{{station.pole}}</span>
+    </ion-item>
+
+
+    <ion-item>
+      <p>
+        <ion-icon color="primary" name="pin"></ion-icon>
+        <span class="address-main">{{station.address}}</span>
+      </p>
+      <p class="address-second" *ngIf="station.address2 != 'None'">{{station.address2}} - {{station.commune}}</p>
+    </ion-item>
+
+
+    <ion-item>
+      <ion-grid class="extras-grid">
+        <ion-row>
+          <ion-col width-25><p>CB</p></ion-col>
+          <ion-col width-25>
+            <ion-icon *ngIf="station.banking" name="checkmark-circle" class="icon-valid"></ion-icon>
+            <ion-icon *ngIf="!station.banking" name="close-circle" class="icon-invalid"></ion-icon>
+          </ion-col>
+          <ion-col width-25><p>Bonus</p></ion-col>
+          <ion-col width-25 [ngSwitch]="station.bonus">
+            <ion-icon *ngSwitchCase="'Oui'" name="checkmark-circle" class="icon-valid"></ion-icon>
+            <ion-icon *ngSwitchCase="'Non'" name="close-circle" class="icon-invalid"></ion-icon>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+    <ion-item>
+      <p class="last-update">
+        <ion-icon name="clock" color="primary"></ion-icon>
+        {{station.last_update}}
+      </p>
+    </ion-item>
+
+  </ion-list>
+</ion-content>
