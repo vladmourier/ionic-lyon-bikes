@@ -7,5 +7,34 @@
 </ion-header>
 
 <ion-content>
-  ...
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Statistiques générales</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>Nombre total de stations : {{this.stations.length}}</ion-item>
+        <ion-item>Nombre total d'emplacements : {{this.totalBikeStands}}</ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Graphiques</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <div id="stations-per-town"></div>
+        </ion-item>
+        <ion-item>
+          <div id="banking-stations"></div>
+        </ion-item>
+        <ion-item>
+          <div id="bonus-stations"></div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>
