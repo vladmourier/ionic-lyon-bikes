@@ -77,11 +77,11 @@ export class StationComponent {
     //console.log("Subscribe");
     this.stationService.requestStations().subscribe(
       stations => {
-        this.setStationsVectorSource(stations)
+        this.setStationsVectorSource(stations);
         this.getAndDrawPosition();
       },
       error => {
-        this.drawFromLocalStorage(error)
+        this.drawFromLocalStorage(error);
         this.getAndDrawPosition();
       }
     );

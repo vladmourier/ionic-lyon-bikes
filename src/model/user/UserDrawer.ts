@@ -23,7 +23,7 @@ export class UserDrawer {
           image: new ol.style.Circle({
             radius: 4,
             fill: null,
-            stroke: new ol.style.Stroke({color: 'blue', width: 10})
+            stroke: new ol.style.Stroke({color: '#00B3E5', width: 10})
           })
         })]
     };
