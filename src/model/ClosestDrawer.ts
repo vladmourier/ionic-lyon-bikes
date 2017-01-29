@@ -14,7 +14,7 @@ export class ClosestDrawer {
       return [new ol.style.Style({
         image: new ol.style.Circle({
           radius: self.getRadiusAccordingToResolution(resolution) + 5,
-          stroke: new ol.style.Stroke({color: 'pink', width: 10})
+          stroke: new ol.style.Stroke({color: '#88CC88', width: 10})
         })
       })]
 }};

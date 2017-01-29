@@ -21,7 +21,7 @@ export class StationDrawer {
           return [new ol.style.Style({
             image: new ol.style.Circle({
               radius: self.getRadiusAccordingToResolution(resolution),
-              fill: new ol.style.Fill({color: 'green'}),
+              fill: new ol.style.Fill({color: '#E11F26'}),
               //stroke: new ol.style.Stroke({color: 'green', width: 3})
           })
           })]
@@ -43,7 +43,7 @@ export class StationDrawer {
           return [new ol.style.Style({
             image: new ol.style.Circle({
               radius: self.getRadiusAccordingToResolution(resolution) ,
-              fill: new ol.style.Fill({color: 'red'}),
+              fill: new ol.style.Fill({color: '#222'}),
               //stroke: new ol.style.Stroke({color: 'red', width: 3})
             })
           })]
