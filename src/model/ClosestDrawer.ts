@@ -13,8 +13,8 @@ export class ClosestDrawer {
     this.style = { 'Point': function(feature, resolution){
       return [new ol.style.Style({
         image: new ol.style.Circle({
-          radius: self.getRadiusAccordingToResolution(resolution) + 3,
-          stroke: new ol.style.Stroke({color: 'pink', width: 10})
+          radius: self.getRadiusAccordingToResolution(resolution) + 5,
+          stroke: new ol.style.Stroke({color: '#88CC88', width: 10})
         })
       })]
 }};
@@ -52,7 +52,8 @@ export class ClosestDrawer {
   }
 
   private getRadiusAccordingToResolution(resolution){
-    return resolution > 15 ? 20 : Math.max(15, resolution);
+      return Math.min(Math.max(5, 15 / Math.sqrt(resolution) + 3), 15);
+    //return resolution > 15 ? 15 : Math.max(8, resolution*0.5);
   }
 
 }
