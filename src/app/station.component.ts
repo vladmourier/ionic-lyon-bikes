@@ -8,7 +8,7 @@ import {StationDrawer} from "../model/station/StationDrawer";
 import {StationService} from "../model/station/StationService";
 import {StationPage} from "../pages/station/station";
 
-//import {Geolocation} from 'ionic-native';
+import {Geolocation} from 'ionic-native';
 import {UserLocation} from "../model/user/UserLocation";
 import {UserDrawer} from "../model/user/UserDrawer";
 import {BikeTrackService} from "../model/tracks/BikeTrackService";
@@ -89,8 +89,7 @@ export class StationComponent {
 
   getAndDrawPosition() {
     this.userLocation = new UserLocation({});
-    navigator.geolocation.getCurrentPosition( // ou plugin cordova
-      (pos) => {
+    Geolocation.getCurrentPosition().then((pos) => {
         this.userLocation.setLocation(pos.coords);
         let userDrawer = new UserDrawer();
         userDrawer.setUserLocation(this.userLocation);
@@ -98,13 +97,10 @@ export class StationComponent {
         this.map.addLayer(userDrawer.getLayer());
         userDrawer.getLayer().setZIndex(20);
         this.drawClosestStation();
-      },
-      (err) => {
+    }).catch((err) => {
         //console.log("GCP Error");
         console.log(err.message)
-      },
-      { timeout: 5000 }
-    );
+    });
   }
 
   drawClosestStation() {
