@@ -36,10 +36,10 @@ export class Station {
       if(object.pole) this.pole = object.pole;
       if(object.lat) this.lat = object.lat;
       if(object.lng) this.lng = object.lng;
-      if(object.bike_stands) this.bike_stands = object.bike_stands;
+      if(object.bike_stands) this.bike_stands = parseInt(object.bike_stands);
       if(object.status) this.status = object.status;
-      if(object.available_bike_stands) this.available_bike_stands = object.available_bike_stands;
-      if(object.available_bikes) this.available_bikes = object.available_bikes;
+      if(object.available_bike_stands) this.available_bike_stands = parseInt(object.available_bike_stands);
+      if(object.available_bikes) this.available_bikes = parseInt(object.available_bikes);
       if(object.availabilitycode) this.availabilitycode = object.availabilitycode;
       if(object.availability) this.availability = object.availability;
       if(object.banking) this.banking = object.banking;

@@ -117,11 +117,11 @@ export class StationComponent {
               userDrawer.setUserLocation(this.userLocation);
               userDrawer.drawOnSource();
               this.map.addLayer(userDrawer.getLayer());
-              console.log("finished drawind user");
+              // console.log("finished drawind user");
               this.drawClosestStation();
           },
           (err) => {
-              console.log("GCP Error");
+              // console.log("GCP Error");
               console.log(err.message)
           },
           {timeout: 5000}
@@ -131,8 +131,8 @@ export class StationComponent {
   drawClosestStation() {
       var closest = this.stations[0];
       var minDist = this.userLocation.distanceTo(this.stations[0]);
-      console.log(this.stations);
-      console.log(this.userLocation);
+      // console.log(this.stations);
+      // console.log(this.userLocation);
       for (let sta in this.stations) {
           var dist = this.userLocation.distanceTo(this.stations[sta]);
           if (typeof closest == "undefined" || dist < minDist) {
@@ -140,7 +140,7 @@ export class StationComponent {
             minDist = dist;
         }
     }
-      console.log(closest);
+      // console.log(closest);
       let closestDrawer = new ClosestDrawer();
       closestDrawer.setStation(closest);
       closestDrawer.drawOnSource();

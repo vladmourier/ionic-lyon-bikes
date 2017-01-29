@@ -3,31 +3,22 @@ import {Station} from "../../model/station/Station";
 import {StationService} from "../../model/station/StationService";
 import {NavController} from "ionic-angular";
 import {StationComponent} from "../../app/station.component";
+import {StationWorker} from "../../app/StationWorker";
 
 @Component({
   selector: 'page-search',
   templateUrl: 'search.html',
   providers: []
 })
-export class SearchPage {
-  _stations: Station[];
-  stations: Station[];
+export class SearchPage extends StationWorker{
   searchedValue: string;
 
   constructor(public navController: NavController) {
+    super(navController);
   }
 
   ngOnInit() {
     this.initStations();
-  }
-
-  initStations() {
-    this._stations = StationService.stations;
-    this.stations = [];
-    for (let sta in this._stations) {
-      this.stations.push(this._stations[sta]);
-    }
-    this._stations = [];
   }
 
   getItems(event) {
