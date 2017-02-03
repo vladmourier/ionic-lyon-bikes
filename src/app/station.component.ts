@@ -39,13 +39,13 @@ export class StationComponent {
     platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
+      this.getAndDrawPosition();
     });
   }
 
   ngOnInit() {
     this.requestStations();
     this.requestBikeTracks();
-    this.getAndDrawPosition();
   }
 
   ngAfterViewInit() {
@@ -93,7 +93,7 @@ export class StationComponent {
     var posOpts = {
       enableHighAccuracy: true
     };
-    Geolocation.getCurrentPosition(posOpts).then((pos) => {
+    Geolocation.getCurrentPosition().then((pos) => {
         this.userLocation.setLocation(pos.coords);
         let userDrawer = new UserDrawer();
         userDrawer.setUserLocation(this.userLocation);
