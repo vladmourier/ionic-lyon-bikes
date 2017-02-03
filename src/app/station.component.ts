@@ -93,7 +93,7 @@ export class StationComponent {
     var posOpts = {
       enableHighAccuracy: true
     };
-    Geolocation.getCurrentPosition().then((pos) => {
+    Geolocation.getCurrentPosition(posOpts).then((pos) => {
         this.userLocation.setLocation(pos.coords);
         let userDrawer = new UserDrawer();
         userDrawer.setUserLocation(this.userLocation);
