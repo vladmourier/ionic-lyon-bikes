@@ -8,7 +8,8 @@ import {StationDrawer} from "../model/station/StationDrawer";
 import {StationService} from "../model/station/StationService";
 import {StationPage} from "../pages/station/station";
 
-import {Geolocation} from 'ionic-native';
+import { Geolocation } from 'ionic-native';
+//import {$cordovaGeolocation} from 'cordova-plugin-geolocation';
 import {UserLocation} from "../model/user/UserLocation";
 import {UserDrawer} from "../model/user/UserDrawer";
 import {BikeTrackService} from "../model/tracks/BikeTrackService";
@@ -89,7 +90,10 @@ export class StationComponent {
 
   getAndDrawPosition() {
     this.userLocation = new UserLocation({});
-    Geolocation.getCurrentPosition().then((pos) => {
+    var posOpts = {
+      enableHighAccuracy: true
+    };
+    Geolocation.getCurrentPosition(posOpts).then((pos) => {
         this.userLocation.setLocation(pos.coords);
         let userDrawer = new UserDrawer();
         userDrawer.setUserLocation(this.userLocation);
