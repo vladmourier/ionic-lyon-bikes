@@ -247,6 +247,7 @@ export class StationComponent {
           this_.map.getLayers().pop();
         }
         this_.requestStations();
+        this_.requestBikeTracks();
         this_.getAndDrawPosition();
       };
 
