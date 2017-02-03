@@ -32,8 +32,8 @@ export class StationDrawer {
           return [new ol.style.Style({
             image: new ol.style.Circle({
               radius: self.getRadiusAccordingToResolution(resolution) ,
-              fill: new ol.style.Fill({color: 'black'}),
-              //stroke: new ol.style.Stroke({color: 'black', width: 3})
+              fill: new ol.style.Fill({color: '#b7b7b7'}),
+              stroke: new ol.style.Stroke({color: '#E11F26', width: 1})
             })
           })]
         }
@@ -81,10 +81,10 @@ export class StationDrawer {
   }
 
   private getStationState() {
-    if(this.station.available_bike_stands === 0 || this.station.available_bikes === 0){
+    if(this.station.bike_stands === 0 || this.station.available_bikes === 0){
       return EMPTY;
     }
-    if (this.station.available_bikes === this.station.available_bike_stands) {
+    if (this.station.available_bikes === this.station.bike_stands) {
       return FULL;
     }
     return REGULAR;

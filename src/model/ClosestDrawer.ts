@@ -19,7 +19,7 @@ export class ClosestDrawer {
       })]
 }};
 
-    this.source = new ol.source.Vector()
+    this.source = new ol.source.Vector();
 
     this.layer = new ol.layer.Vector({
         source: this.source,
