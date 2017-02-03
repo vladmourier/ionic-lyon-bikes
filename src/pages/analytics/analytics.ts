@@ -10,7 +10,7 @@ import highcharts_export from "highcharts/modules/exporting";
 })
 export class AnalyticsPage extends StationWorker {
 
-  protected totalBikeStands;
+  totalBikeStands;
 
   constructor(public navCtrl: NavController) {
     super(navCtrl);
