@@ -14,7 +14,7 @@ export class AnalyticsPage extends StationWorker {
 
   constructor(public navCtrl: NavController) {
     super(navCtrl);
-// Load module after Highcharts is loaded
+    // Load module after Highcharts is loaded
     highcharts_export(Highcharts);
   }
 
@@ -189,9 +189,7 @@ export class AnalyticsPage extends StationWorker {
     for (let obj in _stationsPerTown) {
       stationsPerTown.push([obj, _stationsPerTown[obj]]);
     }
-    stationsPerTown.sort(function (a,b){//Sort by number of stations
-      return a[1]-b[1];
-    });
+    stationsPerTown.sort((a,b) =>  a[1]-b[1]);
     return stationsPerTown;
   }
 

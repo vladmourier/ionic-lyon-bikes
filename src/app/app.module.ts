@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
-import { StationComponent } from './station.component';
+import { TabsComponent } from './tabs.component';
 import { AboutPage } from '../pages/about/about';
 import { SearchPage } from '../pages/search/search';
 import { AnalyticsPage } from '../pages/analytics/analytics';
@@ -12,7 +12,7 @@ import {BikeTrackService} from "../model/tracks/BikeTrackService";
 
 @NgModule({
   declarations: [
-    StationComponent,
+    TabsComponent,
     AboutPage,
     SearchPage,
     AnalyticsPage,
@@ -21,11 +21,11 @@ import {BikeTrackService} from "../model/tracks/BikeTrackService";
     TabsPage
   ],
   imports: [
-    IonicModule.forRoot(StationComponent)
+    IonicModule.forRoot(TabsComponent)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    StationComponent,
+    TabsComponent,
     AboutPage,
     SearchPage,
     AnalyticsPage,
