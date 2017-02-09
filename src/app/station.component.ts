@@ -7,7 +7,6 @@ import {Station} from "../model/station/Station";
 import {StationDrawer} from "../model/station/StationDrawer";
 import {StationService} from "../model/station/StationService";
 import {StationPage} from "../pages/station/station";
-
 //import {Geolocation} from 'ionic-native';
 import {UserLocation} from "../model/user/UserLocation";
 import {UserDrawer} from "../model/user/UserDrawer";
@@ -61,9 +60,9 @@ export class StationComponent {
       overlays: [],
       view: this.view = new ol.View({
         center: StationComponent.INITIAL_COORDINATES,
-        zoom: StationComponent.INITIAL_ZOOM_LEVEL/*,
+        zoom: StationComponent.INITIAL_ZOOM_LEVEL,
         minZoom: 10,
-        maxZoom: 20*/
+        maxZoom: 20
       })
     });
     this.addRefreshControl();
