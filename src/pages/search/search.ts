@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {NavController} from "ionic-angular";
-import {StationComponent} from "../../app/station.component";
 import {StationWorker} from "../../app/StationWorker";
+import {HomePage} from "../home/home";
 
 @Component({
   selector: 'page-search',
@@ -24,19 +24,14 @@ export class SearchPage extends StationWorker{
     this.initStations();
     if (this.searchedValue && this.searchedValue.trim() != '') {
       let regex = new RegExp(this.searchedValue, 'i');
-      this.stations = this.stations.filter((station) => {
-        return regex.test(station.name) || regex.test(station.commune)
-      });
+      this.stations = this.stations.filter((station) => regex.test(station.name) || regex.test(station.commune));
     }
   }
 
   jumpToStation(event) {
     let clickedStationName = event.target.childNodes[1].innerHTML.trim();
     let regex = new RegExp(clickedStationName, 'i');
-    StationComponent.stationToGo = this.stations.find((station) => {
-      return regex.test(station.name)
-    });
+    HomePage.stationToGo = this.stations.find((station) => regex.test(station.name));
     this.navController.parent.select(0);
-    console.log(this.navController.parent.getSelected())
   }
 }
