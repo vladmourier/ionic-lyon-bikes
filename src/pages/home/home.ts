@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {Storage} from '@ionic/storage'
-import {NavController} from 'ionic-angular';
+import {NavController, LoadingController, Loading} from 'ionic-angular';
 import {StationPage} from "../station/station";
 import {StationService} from "../../model/station/StationService";
 import {UserLocation} from "../../model/user/UserLocation";
@@ -29,11 +29,16 @@ export class HomePage {
   tracksAreDisplayed: boolean = false;
   private view: any;
   bikeTracksVector: any;
+  private loading: Loading;
 
-  constructor(public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
+  constructor(public loadingCtrl : LoadingController, public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
   }
 
   ngOnInit() {
+    this.loading = this.loadingCtrl.create({
+      content: "Récupération des informations..."
+    });
+    this.loading.present();
     this.requestStations();
     this.requestBikeTracks();
   }
@@ -86,6 +91,7 @@ export class HomePage {
     //console.log("Subscribe");
     this.stationService.requestStations().subscribe(
       stations => {
+        this.loading.dismiss();
         this.setStationsVectorSource(stations);
         this.getAndDrawPosition();
       },
@@ -352,7 +358,7 @@ export class HomePage {
       let options = opt_options || {};
 
       let button = document.createElement('button');
-      button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
+      button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="bicycle"></ion-icon>';
 
       let displayBikeTracks = function () {
         if(self.tracksAreDisplayed){
@@ -379,7 +385,6 @@ export class HomePage {
       };
 
       button.addEventListener('click', displayBikeTracks, false);
-      button.addEventListener('touchstart', displayBikeTracks, false);
 
       let element = document.createElement('div');
       element.className = 'button-biketracks ol-unselectable ol-control';
