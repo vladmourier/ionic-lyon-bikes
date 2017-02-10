@@ -25,7 +25,10 @@ export class HomePage {
   currentStation: Station;
   errorMessage: string;
   userLocation: UserLocation;
+  tracksFeatureCollection: any;
+  tracksAreDisplayed: boolean = false;
   private view: any;
+  bikeTracksVector: any;
 
   constructor(public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
   }
@@ -56,6 +59,7 @@ export class HomePage {
     });
     this.addRefreshControl();
     this.addCenterRelocationControl();
+    this.addDisplayBikeTracksControl();
   }
 
   ionViewWillEnter() {
@@ -135,18 +139,7 @@ export class HomePage {
   private requestBikeTracks() {
     this.bikeTrackService.requestTracks().subscribe(
       tracksFeatureCollection => {
-        this.map.addLayer(new ol.layer.Vector({
-          source: new ol.source.Vector({
-            features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(tracksFeatureCollection),
-          }),
-          style: new ol.style.Style({
-            stroke: new ol.style.Stroke({
-              color: '#007A33',
-              width: 3
-            }),
-            zIndex: 0
-          })
-        }));
+        this.tracksFeatureCollection=tracksFeatureCollection;
       },
       error => {
         //TODO : load from localStorage
@@ -351,5 +344,54 @@ export class HomePage {
       this.map.addLayer(layers[i]);
       layers[i].setZIndex(10);
     }
+  }
+
+  private addDisplayBikeTracksControl() {
+    var self = this;
+    var bikeTracksControl = function (opt_options) {
+      let options = opt_options || {};
+
+      let button = document.createElement('button');
+      button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
+
+      let displayBikeTracks = function () {
+        if(self.tracksAreDisplayed){
+          self.map.removeLayer(self.bikeTracksVector);
+          self.tracksAreDisplayed = false;
+        } else {
+          if(typeof self.bikeTracksVector === "undefined"){
+            self.bikeTracksVector = new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),
+              }),
+              style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                  color: '#007A33',
+                  width: 3
+                }),
+                zIndex: 0
+              })
+            });
+          }
+          self.map.addLayer(self.bikeTracksVector);
+          self.tracksAreDisplayed = true;
+        }
+      };
+
+      button.addEventListener('click', displayBikeTracks, false);
+      button.addEventListener('touchstart', displayBikeTracks, false);
+
+      let element = document.createElement('div');
+      element.className = 'button-biketracks ol-unselectable ol-control';
+      element.appendChild(button);
+
+      ol.control.Control.call(this, {
+        element: element,
+        target: options.target
+      });
+    };
+    ol.inherits(bikeTracksControl, ol.control.Control);
+
+    this.map.addControl(new bikeTracksControl({}));
   }
 }
