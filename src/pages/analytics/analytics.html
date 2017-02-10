@@ -13,8 +13,8 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list>
-        <ion-item>Nombre total de stations : {{this.stations.length}}</ion-item>
-        <ion-item>Nombre total d'emplacements : {{this.totalBikeStands}}</ion-item>
+        <ion-item>Nombre total de stations : <span style="float: right">{{this.stations.length}}</span></ion-item>
+        <ion-item>Nombre total d'emplacements : <span style="float: right">{{this.totalBikeStands}}</span></ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>
@@ -25,13 +25,22 @@
     <ion-card-content>
       <ion-list>
         <ion-item>
+          <div id="bikestands-per-town"></div>
+        </ion-item>
+        <ion-item>
           <div id="stations-per-town"></div>
         </ion-item>
         <ion-item>
-          <div id="banking-stations"></div>
+          <div id="available-stands-per-town"></div>
         </ion-item>
         <ion-item>
           <div id="bonus-stations"></div>
+        </ion-item>
+        <ion-item>
+          <div id="available-bikes-per-town"></div>
+        </ion-item>
+        <ion-item>
+          <div id="banking-stations"></div>
         </ion-item>
       </ion-list>
     </ion-card-content>

@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {Platform, NavController} from 'ionic-angular';
+import {Platform, NavController, LoadingController} from 'ionic-angular';
 import {StatusBar, Splashscreen} from 'ionic-native';
 import {Storage} from '@ionic/storage'
 import {TabsPage} from '../pages/tabs/tabs';
@@ -14,7 +14,7 @@ export class TabsComponent {
   rootPage = TabsPage;
   @ViewChild('myNav') nav: NavController;
 
-  constructor(platform: Platform) {
+  constructor(platform: Platform, public loadingCtrl : LoadingController) {
     platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
