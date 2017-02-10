@@ -15,4 +15,8 @@ export class StationPage {
   constructor(public navCtrl: NavController, private navParams: NavParams) {
     this.station = new Station(navParams.data);
   }
+
+  ionViewWillLeave(){
+    this.navCtrl.remove(1);
+  }
 }
