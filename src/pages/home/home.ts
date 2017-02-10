@@ -31,7 +31,7 @@ export class HomePage {
   bikeTracksVector: any;
   private loading: Loading;
 
-  constructor(public loadingCtrl : LoadingController, public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
+  constructor(public loadingCtrl: LoadingController, public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
   }
 
   ngOnInit() {
@@ -43,7 +43,7 @@ export class HomePage {
     this.requestBikeTracks();
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     this.map = new ol.Map({
       target: "map",
       layers: [
@@ -96,6 +96,8 @@ export class HomePage {
         this.getAndDrawPosition();
       },
       error => {
+        this.loading.dismiss();
+        //TODO: handle when there is no internet & no localstorage
         this.drawFromLocalStorage(error);
         this.getAndDrawPosition();
       }
@@ -145,10 +147,14 @@ export class HomePage {
   private requestBikeTracks() {
     this.bikeTrackService.requestTracks().subscribe(
       tracksFeatureCollection => {
-        this.tracksFeatureCollection=tracksFeatureCollection;
+        this.tracksFeatureCollection = tracksFeatureCollection;
+        this.storage.set('biketracks', tracksFeatureCollection);
       },
       error => {
-        //TODO : load from localStorage
+        //TODO: handle when there is no internet & no localstorage
+        this.storage.get('biketracks').then(value => {
+          this.tracksFeatureCollection = value
+        })
       }
     )
   }
@@ -361,11 +367,11 @@ export class HomePage {
       button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="bicycle"></ion-icon>';
 
       let displayBikeTracks = function () {
-        if(self.tracksAreDisplayed){
+        if (self.tracksAreDisplayed) {
           self.map.removeLayer(self.bikeTracksVector);
           self.tracksAreDisplayed = false;
         } else {
-          if(typeof self.bikeTracksVector === "undefined"){
+          if (typeof self.bikeTracksVector === "undefined") {
             self.bikeTracksVector = new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),

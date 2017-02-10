@@ -26,12 +26,16 @@ export class SearchPage extends StationWorker {
   }
 
   getItems(event) {
+    this.displayedStations = [];
     this.searchedValue = event.target.value;
     this.initStations();
     this.cursor = 20;
     if (this.searchedValue && this.searchedValue.trim() != '') {
       let regex = new RegExp(this.searchedValue, 'i');
       this.displayedStations = this.stations.filter((station) => regex.test(station.name) || regex.test(station.commune));
+    } else {
+      for (let i = 0; i < this.cursor; i++)
+        this.displayedStations.push(this.stations[i]);
     }
   }
 
@@ -40,6 +44,7 @@ export class SearchPage extends StationWorker {
     let regex = new RegExp(clickedStationName, 'i');
     HomePage.stationToGo = this.stations
       .find((station) => regex.test(station.name));
+    console.log(this.navController);
     this.navController.parent.select(0);
   }
 
