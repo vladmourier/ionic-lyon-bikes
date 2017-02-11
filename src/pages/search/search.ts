@@ -13,7 +13,7 @@ import {StationService} from "../../model/station/StationService";
 })
 export class SearchPage extends StationWorker {
   searchedValue: string;
-  cursor: number = 20;
+  cursor: number = 32;
   displayedStations: Station[] = [];
 
   constructor(public navController: NavController, public stationService: StationService, public toastCtrl: ToastController) {
@@ -30,7 +30,7 @@ export class SearchPage extends StationWorker {
     this.displayedStations = [];
     this.searchedValue = event.target.value;
     this.initStations();
-    this.cursor = 20;
+    this.cursor = 32;
     if (this.searchedValue && this.searchedValue.trim() != '') {
       let regex = new RegExp(this.searchedValue, 'i');
       this.displayedStations = this.stations.filter((station) => regex.test(station.name) || regex.test(station.commune));
@@ -53,7 +53,7 @@ export class SearchPage extends StationWorker {
     var self = this;
     let stationList = document.getElementById("stationsList");
     let oldCursor = this.cursor;
-    this.cursor += 20;
+    this.cursor += 32;
     for (let i = oldCursor; i < this.cursor; i++) {
       let station = this.stations[i];
       let stationHTML = document.createElement('ion-item');
