@@ -23,19 +23,9 @@ export class FavoritesPage {
   }
 
   ionViewWillEnter() {
-      this.getFavorites();
-  }
-
-  getFavorites() {
-      var stations = StationService._stations;
-      this.favorites = [];
-      var self = this;
-          for (let sta in stations)
-            this.stationService.isFavorite(stations[sta]).then((res) => {
-                    if (res)
-                        self.favorites.push(stations[sta]);
-                });
-
+      this.stationService.getFavorites().then((favs) => {
+          this.favorites = favs;
+      });
   }
 
   jumpToStation(event) {

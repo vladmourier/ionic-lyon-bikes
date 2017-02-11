@@ -19,9 +19,9 @@ export class StationPage {
     this.station = new Station(navParams.data);
     this.stationService.isFavorite(this.station).then((isFav) => {
         if (isFav)
-            this.favText = "Remove From Favorites";
+            this.favText = "Supprimer des Favoris";
         else
-            this.favText = "Add To Favorites";
+            this.favText = "Ajouter aux Favoris";
     });
   }
 
@@ -30,11 +30,11 @@ export class StationPage {
       this.stationService.isFavorite(this.station).then((isFav) => {
           if (isFav) {
               this.stationService.removeFromFavorites(this.station);
-                  this.favText = "Add To Favorites";
+                  this.favText = "Ajouter aux Favoris";
           }
           else {
               this.stationService.addToFavorites(this.station);
-              this.favText = "Remove From Favorites";
+              this.favText = "Supprimer des Favoris";
           }
       });
   }
