@@ -23,7 +23,6 @@ export class BikeTrackService {
   }
 
   private handleError(error: Response | any) {
-    console.log("handleError");
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';
@@ -32,7 +31,6 @@ export class BikeTrackService {
     } else {
       errMsg = error.message ? error.message : error.toString();
     }
-    console.error(errMsg);
     return Observable.throw(errMsg);
   }
 }
