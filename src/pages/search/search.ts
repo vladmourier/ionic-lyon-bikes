@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController} from "ionic-angular";
+import {NavController, ToastController} from "ionic-angular";
 import {StationWorker} from "../../app/StationWorker";
 import {HomePage} from "../home/home";
 import {Station} from "../../model/station/Station";
+import {StationService} from "../../model/station/StationService";
 
 
 @Component({
@@ -15,8 +16,8 @@ export class SearchPage extends StationWorker {
   cursor: number = 20;
   displayedStations: Station[] = [];
 
-  constructor(public navController: NavController) {
-    super(navController);
+  constructor(public navController: NavController, public stationService: StationService, public toastCtrl: ToastController) {
+    super(navController, stationService, toastCtrl);
   }
 
   ngOnInit() {
@@ -26,12 +27,16 @@ export class SearchPage extends StationWorker {
   }
 
   getItems(event) {
+    this.displayedStations = [];
     this.searchedValue = event.target.value;
     this.initStations();
     this.cursor = 20;
     if (this.searchedValue && this.searchedValue.trim() != '') {
       let regex = new RegExp(this.searchedValue, 'i');
       this.displayedStations = this.stations.filter((station) => regex.test(station.name) || regex.test(station.commune));
+    } else {
+      for (let i = 0; i < this.cursor; i++)
+        this.displayedStations.push(this.stations[i]);
     }
   }
 
@@ -40,6 +45,7 @@ export class SearchPage extends StationWorker {
     let regex = new RegExp(clickedStationName, 'i');
     HomePage.stationToGo = this.stations
       .find((station) => regex.test(station.name));
+    console.log(this.navController);
     this.navController.parent.select(0);
   }
 
@@ -60,7 +66,7 @@ export class SearchPage extends StationWorker {
         self.navController.parent.select(0);
       });
       stationHTML.setAttribute("tappable", 'true');
-      stationHTML.innerHTML = '<ion-thumbnail item-left><img src="https://biok03.github.io/bi-velov/images/stations/' + station.number + '.jpg"></ion-thumbnail>' +
+      stationHTML.innerHTML = '<ion-thumbnail item-left><img class="list-img" src="assets/stations/' + station.number + '.jpg"></ion-thumbnail>' +
         '<div class="item-inner"><div class="input-wrapper"><ion-label class="label label-md">'
         + station.name + '</ion-label></div></div>';
 

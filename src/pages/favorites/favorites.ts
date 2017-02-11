@@ -15,7 +15,7 @@ export class FavoritesPage {
   cursor: number = 20;
   favorites: Station[];
 
-  constructor(public navController: NavController, public storage: Storage) {
+  constructor(public navController: NavController, public storage: Storage, public stationService: StationService) {
   }
 
   ngOnInit() {
@@ -27,11 +27,11 @@ export class FavoritesPage {
   }
 
   getFavorites() {
-      var stations = StationService.stations;
+      var stations = StationService._stations;
       this.favorites = [];
       var self = this;
           for (let sta in stations)
-            stations[sta].isFavorite().then((res) => {
+            this.stationService.isFavorite(stations[sta]).then((res) => {
                     if (res)
                         self.favorites.push(stations[sta]);
                 });
@@ -52,8 +52,8 @@ export class FavoritesPage {
     let favoritesList = document.getElementById("favoritesList");
     let oldCursor = this.cursor;
     this.cursor += 20;
-    //for (let i = oldCursor; i < this.cursor; i++) {
-    for (let i = 0; i < 2; i++) {
+    for (let i = oldCursor; i < this.cursor; i++) {
+    //for (let i = 0; i < 2; i++) {
       let station = this.favorites[i];
       let stationHTML = document.createElement('ion-item');
       stationHTML.className = "item-block item item-md my-dir";

@@ -1,3 +1,11 @@
-page-contact {
-
+page-analytics {
+  #chartlist {
+    display: flex;
+    flex-wrap: wrap;
+    ion-item {
+      @media all and (orientation: landscape) {
+        max-width: 50% !important;
+      }
+    }
+  }
 }

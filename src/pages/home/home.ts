@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {Storage} from '@ionic/storage'
-import {NavController} from 'ionic-angular';
+import {NavController, LoadingController, Loading, AlertController, ToastController} from 'ionic-angular';
 import {StationPage} from "../station/station";
 import {StationService} from "../../model/station/StationService";
 import {UserLocation} from "../../model/user/UserLocation";
@@ -29,16 +29,23 @@ export class HomePage {
   tracksAreDisplayed: boolean = false;
   private view: any;
   bikeTracksVector: any;
+  private loading: Loading;
 
-  constructor(public stationService: StationService, public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
+  constructor(public loadingCtrl: LoadingController, public stationService: StationService, public alertCtrl: AlertController,
+              private toastCtrl: ToastController,
+              public storage: Storage, public bikeTrackService: BikeTrackService, public nav: NavController) {
   }
 
   ngOnInit() {
+    this.loading = this.loadingCtrl.create({
+      content: "Récupération des informations..."
+    });
+    this.loading.present();
     this.requestStations();
     this.requestBikeTracks();
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     this.map = new ol.Map({
       target: "map",
       layers: [
@@ -82,14 +89,16 @@ export class HomePage {
   /**
    * Get the stations from StationService and treat them accordingly
    */
-  private requestStations() {
+  private requestStations(refresh: boolean = false) {
     //console.log("Subscribe");
-    this.stationService.requestStations().subscribe(
+    this.stationService.requestStations(refresh).subscribe(
       stations => {
+        this.loading.dismiss();
         this.setStationsVectorSource(stations);
         this.getAndDrawPosition();
       },
       error => {
+        this.loading.dismiss();
         this.drawFromLocalStorage(error);
         this.getAndDrawPosition();
       }
@@ -97,6 +106,7 @@ export class HomePage {
   }
 
   getAndDrawPosition() {
+    var self = this;
     this.userLocation = new UserLocation({});
     navigator.geolocation.getCurrentPosition( // ou plugin cordova
       (pos) => {
@@ -110,7 +120,11 @@ export class HomePage {
       },
       (err) => {
         //console.log("GCP Error");
-        console.log(err.message)
+        console.log(err.message);
+        self.toastCtrl.create({
+          message: "Impossible de détecter votre position",
+          duration: 3000
+        }).present();
       },
       {timeout: 5000}
     );
@@ -139,10 +153,18 @@ export class HomePage {
   private requestBikeTracks() {
     this.bikeTrackService.requestTracks().subscribe(
       tracksFeatureCollection => {
-        this.tracksFeatureCollection=tracksFeatureCollection;
+        this.tracksFeatureCollection = tracksFeatureCollection;
+        this.storage.set('biketracks', tracksFeatureCollection);
       },
       error => {
-        //TODO : load from localStorage
+        this.storage.get('biketracks').then(value => {
+          if (value != null)
+            this.tracksFeatureCollection = value;
+          else this.toastCtrl.create({
+            message: "Impossible de récupérer les pistes cyclables",
+            duration: 3000
+          }).present();
+        })
       }
     )
   }
@@ -150,24 +172,21 @@ export class HomePage {
   /**
    * Use the StationArray to draw stations on the map according to their GPS Coordinates and their states.
    * Allow a station to be selected.
-   * @param Stations
+   * @param stations
    */
-  private setStationsVectorSource(Stations) {
+  private setStationsVectorSource(stations) {
     // console.log("setStations");
     var self = this;
     this.stations = [];
-    let stationsArray = Stations.values;
+    let stationsArray = stations;
     let stationDrawer = new StationDrawer();
     //draws stations on different layers according to their state
-    for (let i = 0, l = stationsArray.length; i < l; i++) {
-      let station = new Station(stationsArray[i], this.storage);
+    for (let stationId in stationsArray) {
+      let station = new Station(stationsArray[stationId]);
       // this.stations.push(station);
       this.stations[station.number] = station;
       this.drawStation(station, stationDrawer);
     }
-
-    //Sets the service array for future use
-    StationService.stations = this.stations;
 
     //Add the layers to the map
     this.addLayersToMap(stationDrawer);
@@ -244,7 +263,7 @@ export class HomePage {
         while (this_.map.getLayers().getLength() != 1) {
           this_.map.getLayers().pop();
         }
-        this_.requestStations();
+        this_.requestStations(true);
         this_.requestBikeTracks();
         this_.getAndDrawPosition();
       };
@@ -314,22 +333,29 @@ export class HomePage {
    * @param PrevError
    */
   private drawFromLocalStorage(PrevError) {
-    var self = this;
+    let self = this;
     if (PrevError)
       this.errorMessage = <any>PrevError;
-    this.storage.get('stations').then(function (res) {
-        let stationDrawer = new StationDrawer();
-        self.stations = JSON.parse(res);
+    this.storage.get('stations')
+      .then((res) => {
+          if (res !== null) {
+            let stationDrawer = new StationDrawer();
+            self.stations = JSON.parse(res);
+            //Sets the service array for future use
+            StationService._stations = self.stations;
+            for (let sta in self.stations)
+              self.drawStation(self.stations[sta], stationDrawer)
 
-        //Sets the service array for future use
-        StationService.stations = self.stations;
-
-        for (let sta in self.stations)
-          self.drawStation(self.stations[sta], stationDrawer)
-
-        self.addLayersToMap(stationDrawer);
-      }
-    );
+            self.addLayersToMap(stationDrawer);
+          } else {
+            self.alertCtrl.create({
+              title: 'Erreur',
+              subTitle: 'Veuillez vérifier votre connexion à internet puis cliquez sur le bouton rafraîchir en haut à gauche de la carte',
+              buttons: ["OK"]
+            }).present();
+          }
+        }
+      );
   }
 
   private drawStation(station, stationDrawer) {
@@ -352,14 +378,14 @@ export class HomePage {
       let options = opt_options || {};
 
       let button = document.createElement('button');
-      button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="locate"></ion-icon>';
+      button.innerHTML = '<ion-icon name="bicycle" role="img" class="icon icon-md ion-md-bicycle" aria-label="close circle" ng-reflect-name="bicycle"></ion-icon>';
 
       let displayBikeTracks = function () {
-        if(self.tracksAreDisplayed){
+        if (self.tracksAreDisplayed) {
           self.map.removeLayer(self.bikeTracksVector);
           self.tracksAreDisplayed = false;
         } else {
-          if(typeof self.bikeTracksVector === "undefined"){
+          if (typeof self.tracksFeatureCollection !== "undefined" && typeof self.bikeTracksVector === "undefined") {
             self.bikeTracksVector = new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),
@@ -372,14 +398,16 @@ export class HomePage {
                 zIndex: 0
               })
             });
-          }
-          self.map.addLayer(self.bikeTracksVector);
-          self.tracksAreDisplayed = true;
+            self.map.addLayer(self.bikeTracksVector);
+            self.tracksAreDisplayed = true;
+          } else self.toastCtrl.create({
+            message: "Impossible de récupérer les pistes cyclables. Connectez vous à internet et cliquez sur le bouton rafraîchir",
+            duration: 3000
+          }).present();
         }
       };
 
       button.addEventListener('click', displayBikeTracks, false);
-      button.addEventListener('touchstart', displayBikeTracks, false);
 
       let element = document.createElement('div');
       element.className = 'button-biketracks ol-unselectable ol-control';
