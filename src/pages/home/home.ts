@@ -41,6 +41,8 @@ export class HomePage {
       content: "Récupération des informations..."
     });
     this.loading.present();
+
+    this.stationService.checkFavoritesStorage();
     this.requestStations();
     this.requestBikeTracks();
   }
