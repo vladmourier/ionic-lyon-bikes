@@ -9,27 +9,31 @@ import {Station} from "./Station";
 
 @Injectable()
 export class StationService {
-  private static _stations: Station[];
+  public static _stations: Station[];
   private stationsUrl = 'https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json';  // URL to web API
   constructor(private http: Http) {
   }
 
-  requestStations(): Observable<any> {
-    return this.http.get(this.stationsUrl)
+  requestStations(refresh: boolean = false): Observable<any> {
+    if (!refresh && typeof StationService._stations !== "undefined") {
+      return Observable.of(StationService._stations).map(value => value).catch(error => {
+        console.log(error);
+        return [];
+      });
+    } else return this.http.get(this.stationsUrl)
       .map(this.extractData)
       .catch(this.handleError);
   }
 
-  static get stations(): Station[] {
-    return this._stations;
-  }
-
-  static set stations(value: Station[]) {
-    this._stations = value;
-  }
-
   private extractData(res: Response) {
-    return res.json();
+    let stations = [];
+    let stationsArray = res.json().values;
+    for (let i = 0, l = stationsArray.length; i < l; i++) {
+      let station = new Station(stationsArray[i]);
+      stations[station.number] = station;
+    }
+    StationService._stations = stations;
+    return stations;
   }
 
   private handleError(error: Response | any) {

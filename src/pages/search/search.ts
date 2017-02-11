@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController} from "ionic-angular";
+import {NavController, ToastController} from "ionic-angular";
 import {StationWorker} from "../../app/StationWorker";
 import {HomePage} from "../home/home";
 import {Station} from "../../model/station/Station";
+import {StationService} from "../../model/station/StationService";
 
 
 @Component({
@@ -15,8 +16,8 @@ export class SearchPage extends StationWorker {
   cursor: number = 20;
   displayedStations: Station[] = [];
 
-  constructor(public navController: NavController) {
-    super(navController);
+  constructor(public navController: NavController, public stationService: StationService, public toastCtrl: ToastController) {
+    super(navController, stationService, toastCtrl);
   }
 
   ngOnInit() {

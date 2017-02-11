@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
 
-import {NavController, LoadingController, Loading} from 'ionic-angular';
+import {NavController, LoadingController, Loading, ToastController} from 'ionic-angular';
 import {StationWorker} from "../../app/StationWorker";
 import Highcharts from "highcharts";
 import highcharts_export from "highcharts/modules/exporting";
+import {StationService} from "../../model/station/StationService";
 @Component({
   selector: 'page-analytics',
   templateUrl: 'analytics.html'
@@ -13,11 +14,11 @@ export class AnalyticsPage extends StationWorker {
   totalBikeStands;
   private loading: Loading;
 
-  constructor(public navCtrl: NavController, public loadingCtrl: LoadingController) {
 
-    super(navCtrl);
-    // Load module after Highcharts is loaded
-    highcharts_export(Highcharts);
+  constructor(public navController: NavController, public stationService: StationService,
+                public toastCtrl: ToastController, public loadingCtrl: LoadingController) {
+    super(navController, stationService, toastCtrl);
+    highcharts_export(Highcharts)
   }
 
   ionViewDidLoad() {
@@ -230,8 +231,8 @@ export class AnalyticsPage extends StationWorker {
     let sideData = {};
 
     //Computes the number of bikestands per town
-    this.stations.forEach((station) =>{
-      if(typeof sideData[station.commune] !== "undefined"){
+    this.stations.forEach((station) => {
+      if (typeof sideData[station.commune] !== "undefined") {
         data[sideData[station.commune].index][1] += station.bike_stands;
         sideData[station.commune].count += 1;
       } else {
@@ -303,8 +304,8 @@ export class AnalyticsPage extends StationWorker {
     let sideData = {};
 
     //Computes the number of bikestands & available_bike_stands per town
-    this.stations.forEach((station) =>{
-      if(typeof sideData[station.commune] !== "undefined"){
+    this.stations.forEach((station) => {
+      if (typeof sideData[station.commune] !== "undefined") {
         data[sideData[station.commune].index][1] += station.bike_stands;
         data[sideData[station.commune].index][2] += station.available_bike_stands;
         sideData[station.commune].count += 1;
@@ -318,7 +319,7 @@ export class AnalyticsPage extends StationWorker {
     });
     //Computes the average
     data.forEach((array) => {
-      array[1] = (array[2]/array[1]);
+      array[1] = (array[2] / array[1]);
     });
     serie.data = data.sort();
     let series = [serie];
@@ -378,8 +379,8 @@ export class AnalyticsPage extends StationWorker {
     let sideData = {};
 
     //Computes the number of available bikes per town
-    this.stations.forEach((station) =>{
-      if(typeof sideData[station.commune] !== "undefined"){
+    this.stations.forEach((station) => {
+      if (typeof sideData[station.commune] !== "undefined") {
         data[sideData[station.commune].index][1] += station.available_bikes;
         sideData[station.commune].count += 1;
       } else {
