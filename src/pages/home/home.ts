@@ -93,7 +93,6 @@ export class HomePage {
     //console.log("Subscribe");
     this.stationService.requestStations(refresh).subscribe(
       stations => {
-        debugger;
         this.loading.dismiss();
         this.setStationsVectorSource(stations);
         this.getAndDrawPosition();
@@ -177,7 +176,6 @@ export class HomePage {
    */
   private setStationsVectorSource(stations) {
     // console.log("setStations");
-    debugger;
     var self = this;
     this.stations = [];
     let stationsArray = stations;
@@ -388,7 +386,6 @@ export class HomePage {
           self.tracksAreDisplayed = false;
         } else {
           if (typeof self.tracksFeatureCollection !== "undefined" && typeof self.bikeTracksVector === "undefined") {
-            debugger;
             self.bikeTracksVector = new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),

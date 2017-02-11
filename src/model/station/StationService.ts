@@ -33,7 +33,6 @@ export class StationService {
       stations[station.number] = station;
     }
     StationService._stations = stations;
-    debugger;
     return stations;
   }
 
