@@ -1,4 +1,4 @@
-import {NavController} from "ionic-angular";
+import {NavController, ToastController} from "ionic-angular";
 import {Station} from "../model/station/Station";
 import {StationService} from "../model/station/StationService";
 /**
@@ -8,11 +8,16 @@ export class StationWorker {
   _stations: Station[];
   stations: Station[];
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController, public stationService: StationService, public toastCtrl: ToastController) {
   }
 
   initStations() {
-    this._stations = StationService.stations;
+    this.stationService.requestStations().subscribe(
+      stations => this._stations = stations,
+      error => this.toastCtrl.create({
+        message: "Impossible de récupérer les stations",
+        duration: 3000
+      }).present());
     this.stations = [];
     for (let sta in this._stations) {
       this.stations.push(this._stations[sta]);

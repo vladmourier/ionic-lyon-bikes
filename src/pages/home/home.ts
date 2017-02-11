@@ -37,7 +37,6 @@ export class HomePage {
   }
 
   ngOnInit() {
-    this.storage.clear();
     this.loading = this.loadingCtrl.create({
       content: "Récupération des informations..."
     });
@@ -90,10 +89,11 @@ export class HomePage {
   /**
    * Get the stations from StationService and treat them accordingly
    */
-  private requestStations() {
+  private requestStations(refresh: boolean = false) {
     //console.log("Subscribe");
-    this.stationService.requestStations().subscribe(
+    this.stationService.requestStations(refresh).subscribe(
       stations => {
+        debugger;
         this.loading.dismiss();
         this.setStationsVectorSource(stations);
         this.getAndDrawPosition();
@@ -158,7 +158,6 @@ export class HomePage {
         this.storage.set('biketracks', tracksFeatureCollection);
       },
       error => {
-        //TODO: handle when there is no internet & no localstorage
         this.storage.get('biketracks').then(value => {
           if (value != null)
             this.tracksFeatureCollection = value;
@@ -174,24 +173,22 @@ export class HomePage {
   /**
    * Use the StationArray to draw stations on the map according to their GPS Coordinates and their states.
    * Allow a station to be selected.
-   * @param Stations
+   * @param stations
    */
-  private setStationsVectorSource(Stations) {
+  private setStationsVectorSource(stations) {
     // console.log("setStations");
+    debugger;
     var self = this;
     this.stations = [];
-    let stationsArray = Stations.values;
+    let stationsArray = stations;
     let stationDrawer = new StationDrawer();
     //draws stations on different layers according to their state
-    for (let i = 0, l = stationsArray.length; i < l; i++) {
-      let station = new Station(stationsArray[i]);
+    for (let stationId in stationsArray) {
+      let station = new Station(stationsArray[stationId]);
       // this.stations.push(station);
       this.stations[station.number] = station;
       this.drawStation(station, stationDrawer);
     }
-
-    //Sets the service array for future use
-    StationService.stations = this.stations;
 
     //Add the layers to the map
     this.addLayersToMap(stationDrawer);
@@ -268,7 +265,7 @@ export class HomePage {
         while (this_.map.getLayers().getLength() != 1) {
           this_.map.getLayers().pop();
         }
-        this_.requestStations();
+        this_.requestStations(true);
         this_.requestBikeTracks();
         this_.getAndDrawPosition();
       };
@@ -338,7 +335,7 @@ export class HomePage {
    * @param PrevError
    */
   private drawFromLocalStorage(PrevError) {
-    var self = this;
+    let self = this;
     if (PrevError)
       this.errorMessage = <any>PrevError;
     this.storage.get('stations')
@@ -347,7 +344,7 @@ export class HomePage {
             let stationDrawer = new StationDrawer();
             self.stations = JSON.parse(res);
             //Sets the service array for future use
-            StationService.stations = self.stations;
+            StationService._stations = self.stations;
             for (let sta in self.stations)
               self.drawStation(self.stations[sta], stationDrawer)
 
