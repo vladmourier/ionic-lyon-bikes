@@ -8,7 +8,7 @@
     <ion-list id="favoritesList">
     <ion-item *ngFor="let station of favorites" (click)="jumpToStation($event)">
       <ion-thumbnail item-left>
-        <img src="{{'https://biok03.github.io/bi-velov/images/stations/' + station.number + '.jpg' }}">
+        <img class="list-img" src="{{'https://biok03.github.io/bi-velov/images/stations/' + station.number + '.jpg' }}">
       </ion-thumbnail>
       <h2>{{ station.name }}</h2>
     </ion-item>

@@ -2,4 +2,21 @@ page-favorites {
   .item-md ion-thumbnail img {
     margin-top: 10px;
   }
+
+  .list-img {
+    border-radius: 35px;
+  }
+
+  #favoritesList {
+    @media all and (min-width: 650px) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    ion-item {
+      @media all and (min-width: 650px) {
+        max-width:50%;
+        border: none;
+      }
+    }
+  }
 }

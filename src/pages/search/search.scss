@@ -6,4 +6,17 @@ page-search {
   .list-img{
     border-radius: 35px;
   }
+
+  #stationsList {
+    @media all and (min-width: 650px) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    ion-item {
+      @media all and (min-width: 650px) {
+        max-width:50%;
+        border: none;
+      }
+    }
+  }
 }
