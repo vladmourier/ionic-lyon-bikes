@@ -13,32 +13,29 @@ import {StationService} from "../../model/station/StationService";
 export class FavoritesPage {
   searchedValue: string;
   cursor: number = 20;
-  displayedStations: Station[] = [];
   favorites: Station[];
 
   constructor(public navController: NavController, public storage: Storage) {
   }
 
   ngOnInit() {
+      //this.getFavorites();
+  }
+
+  ionViewWillEnter() {
       this.getFavorites();
   }
 
   getFavorites() {
-      console.log('setting favorites');
-      this.storage.set('favorites', ['Opéra', 'INSA']) //TODO : REMOVE THIS TEST LINE
+      var stations = StationService.stations;
       this.favorites = [];
       var self = this;
-      var stations = StationService.stations;
-      this.storage.get('favorites').then((res) => {
-          console.log(res);
           for (let sta in stations)
-            for(let favname in res)
-                if (stations[sta].name == res[favname]) {
-                    self.favorites.push(stations[sta]);
-                    console.log('favorite found');
-                }
-        }
-      );
+            stations[sta].isFavorite().then((res) => {
+                    if (res)
+                        self.favorites.push(stations[sta]);
+                });
+
   }
 
   jumpToStation(event) {
@@ -50,6 +47,7 @@ export class FavoritesPage {
   }
 
   doInfinite(infiniteScroll) {
+    //this.getFavorites();
     var self = this;
     let favoritesList = document.getElementById("favoritesList");
     let oldCursor = this.cursor;

@@ -1,6 +1,7 @@
 /**
  * Created by Vlad on 25/11/2016.
  */
+import {Storage} from '@ionic/storage'
 
 export class Station {
   number: number;
@@ -24,7 +25,7 @@ export class Station {
   last_update: string;
   last_update_fme: string;
 
-  constructor(object: any) {
+  constructor(object: any, public storage: Storage) {
     if (object) {
       if (object.number) this.number = object.number;
       if (object.name) this.name = object.name;
@@ -47,5 +48,38 @@ export class Station {
       if (object.last_update) this.last_update = object.last_update;
       if (object.last_update_fme) this.last_update_fme = object.last_update_fme;
     }
+  }
+
+  isFavorite():Promise<any> {
+      return new Promise((resolve, reject) => {
+        this.storage.get('favorites').then((favs) => {
+          for (let favname in favs)
+            if (this.name == favs[favname]) {
+
+                    console.log('testing favoriteness');
+
+                      resolve(true);
+            }
+          resolve(false);
+        });
+      })
+  }
+
+  addToFavorites() {
+    this.storage.get('favorites').then((favs) => {
+      for (let favname in favs)
+        if (this.name == favs[favname])
+          return;
+      favs.push(this.name);
+      this.storage.set('favorites', favs);
+    });
+  }
+
+  removeFromFavorites() {
+      this.storage.get('favorites').then((favs) => {
+        this.storage.set('favorites', favs.filter((fav) => {
+            return fav != this.name;
+        }));
+      });
   }
 }

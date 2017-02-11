@@ -160,7 +160,7 @@ export class HomePage {
     let stationDrawer = new StationDrawer();
     //draws stations on different layers according to their state
     for (let i = 0, l = stationsArray.length; i < l; i++) {
-      let station = new Station(stationsArray[i]);
+      let station = new Station(stationsArray[i], this.storage);
       // this.stations.push(station);
       this.stations[station.number] = station;
       this.drawStation(station, stationDrawer);
