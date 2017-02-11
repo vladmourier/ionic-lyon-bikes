@@ -53,7 +53,12 @@ export class StationService {
     return Observable.throw(errMsg);
   }
 
-
+  checkFavoritesStorage() {
+    this.storage.get('favorites').then((res) => {
+      if (res == undefined || res == null)
+        this.storage.set('favorites', []);
+    });
+  }
 
   isFavorite(a_station): Promise<any> {
     return new Promise((resolve, reject) => {

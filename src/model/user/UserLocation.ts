@@ -67,22 +67,3 @@ export class UserLocation {
   }
 
 }
-
-/*
-
-
-
-let watch = navigator.geolocation.watchPosition(
-    (pos) => {
-        console.log("ca fait GCP Success");
-        this.userLocation.setLocation(pos.coords);
-        console.log("Coordonnees : " + this.userLocation.lat + ', ' + this.userLocation.lng);
-    },
-    (err) => {
-        console.log("ca fait GCP Error");
-        console.log(err.message)
-    },
-    {timeout: 5000}
-);
-
-*/

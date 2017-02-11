@@ -26,7 +26,6 @@ export class StationPage {
   }
 
   switchFav(event) {
-      console.log('switching fav');
       this.stationService.isFavorite(this.station).then((isFav) => {
           if (isFav) {
               this.stationService.removeFromFavorites(this.station);
