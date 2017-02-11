@@ -160,7 +160,7 @@ export class AnalyticsPage extends StationWorker {
       title: {
         text: 'Stations par commune',
         align: 'center',
-        verticalAlign: 'top',
+        margin: 20
       },
       tooltip: {
         pointFormat: 'Stations : <b>{point.y}</b>'
@@ -205,12 +205,7 @@ export class AnalyticsPage extends StationWorker {
   }
 
   private getTotalBikeStands() {
-    let bikeStands = 0;
-    for (let sta in this.stations) {
-      let station = this.stations[sta];
-      bikeStands += station.bike_stands;
-    }
-    return bikeStands;
+    return this.stations.map(station => station.bike_stands).reduce((prev, current) => prev + current);
   }
 
   private AverageBikeStandsPerStationInTownChart() {
