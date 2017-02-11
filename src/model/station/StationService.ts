@@ -7,7 +7,6 @@ import {Http, Response} from '@angular/http';
 import {Observable}     from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {Station} from "./Station";
-import {Storage} from '@ionic/storage'
 
 @Injectable()
 export class StationService {
