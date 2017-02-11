@@ -7,7 +7,7 @@
 <ion-content>
   <ion-navbar [color]="'primary'" class="station-navbar">
     <ion-item id="header">
-    <ion-thumbnail item-left><img src="{{ 'assets/stations/' + station.number + '.jpg'}}" alt="Image indisponible"></ion-thumbnail>
+    <ion-thumbnail item-left><img class="thumbnail" src="{{ 'assets/stations/' + station.number + '.jpg'}}" alt="Image indisponible"></ion-thumbnail>
       <h2>{{station.name}}<br> ({{station.commune}})</h2>
     </ion-item>
   </ion-navbar>
@@ -64,7 +64,7 @@
       </p>
     </ion-item>
 
-    <button ion-button (click)="switchFav($event)">
+    <button class="favbtn" ion-button (click)="switchFav($event)">
         <ion-icon name="star"></ion-icon>
         {{favText}}
     </button>

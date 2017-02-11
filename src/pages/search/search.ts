@@ -41,11 +41,16 @@ export class SearchPage extends StationWorker {
   }
 
   jumpToStation(event) {
-    let clickedStationName = event.target.innerText.trim();
+    let clickedStationName;
+    if (event.target.localName === "img") {
+      clickedStationName = event.target.parentElement.parentElement.childNodes[1].innerText.trim();
+    }
+    else if (event.target.localName === "ion-thumbnail")
+      clickedStationName = event.target.nextSibling.innerText.trim();
+    else clickedStationName = event.target.innerText.trim();
     let regex = new RegExp(clickedStationName, 'i');
     HomePage.stationToGo = this.stations
       .find((station) => regex.test(station.name));
-    console.log(this.navController);
     this.navController.parent.select(0);
   }
 
