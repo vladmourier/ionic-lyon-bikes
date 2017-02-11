@@ -37,6 +37,10 @@ export class HomePage {
   }
 
   ngOnInit() {
+    this.storage.get('favorites').then((res) => {
+        if (res == undefined || res == null)
+            this.storage.set('favorites', []);
+    });
     this.loading = this.loadingCtrl.create({
       content: "Récupération des informations..."
     });
