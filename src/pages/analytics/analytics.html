@@ -13,9 +13,14 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list>
+        <ion-list-header>Stations & vélos :</ion-list-header>
         <ion-item>Nombre total de stations : <span style="float: right">{{this.stations.length}}</span></ion-item>
         <ion-item>Nombre total d'emplacements : <span style="float: right">{{this.totalBikeStands}}</span></ion-item>
-        <ion-item>Nombre total de vélos disponibles : <span style="float: right">{{this.totalAvailableBikes}}</span></ion-item>
+        <ion-item>Nombre total de vélos disponibles : <span style="float: right">{{this.totalAvailableBikes}}</span>
+        </ion-item>
+        <ion-list-header *ngIf="this.totalTracks !== null">Pistes cyclables</ion-list-header>
+        <ion-item *ngIf="this.totalTracks !== null">Nombre total de pistes cyclables: <span style="float: right">{{this.totalTracks}}</span>
+        </ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>

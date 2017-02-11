@@ -15,6 +15,7 @@ export class StationService {
 
   favorites;
   favoritesChanged = true;
+  private parseError = parseError;
 
   constructor(private http: Http, private storage: Storage) {
   }
@@ -47,22 +48,7 @@ export class StationService {
         let errMsg = self.parseError([error, Othererror]);
         return Observable.throw(errMsg);
       });
-    return Observable.throw(this.parseError([error]));
-  }
-
-  private parseError(errors: any[]) {
-    let errMsg: string;
-    errors.forEach((error) => {
-      if (error instanceof Response) {
-        const body = error.json() || '';
-        const err = body.error || JSON.stringify(body);
-        errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-      } else {
-        errMsg = error.message ? error.message : error.toString();
-      }
-      errMsg += "\r\n";
-    });
-    return errMsg
+    return Observable.throw(self.parseError([error]));
   }
 
   checkFavoritesStorage() {
@@ -126,4 +112,19 @@ export class StationService {
       resolve(favs);
     })
   }
+}
+
+export function parseError(errors: any[]) {
+  let errMsg: string;
+  errors.forEach((error) => {
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    errMsg += "\r\n";
+  });
+  return errMsg
 }

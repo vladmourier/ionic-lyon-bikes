@@ -13,7 +13,7 @@ declare var ol: any;
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
   public static stationToGo: Station;
@@ -23,7 +23,6 @@ export class HomePage {
   @ViewChild('map') map;
   stations: Station[];
   currentStation: Station;
-  errorMessage: string;
   userLocation: UserLocation;
   tracksFeatureCollection: any;
   tracksAreDisplayed: boolean = false;
@@ -101,7 +100,7 @@ export class HomePage {
       },
       error => {
         this.loading.dismiss();
-        this.drawFromLocalStorage(error);
+        this.alertNoConnection(error);
         this.getAndDrawPosition();
       }
     );
@@ -152,21 +151,17 @@ export class HomePage {
   /**
    * Gets the tracks information and treat them accordingly
    */
-  private requestBikeTracks() {
-    this.bikeTrackService.requestTracks().subscribe(
+  private requestBikeTracks(refresh: boolean = false) {
+    this.bikeTrackService.requestTracks(refresh).subscribe(
       tracksFeatureCollection => {
         this.tracksFeatureCollection = tracksFeatureCollection;
-        this.storage.set('biketracks', tracksFeatureCollection);
       },
       error => {
-        this.storage.get('biketracks').then(value => {
-          if (value != null)
-            this.tracksFeatureCollection = value;
-          else this.toastCtrl.create({
-            message: "Impossible de récupérer les pistes cyclables",
-            duration: 3000
-          }).present();
-        })
+        console.log(error);
+        this.toastCtrl.create({
+          message: "Impossible de récupérer les pistes cyclables",
+          duration: 3000
+        }).present();
       }
     )
   }
@@ -252,7 +247,7 @@ export class HomePage {
           this_.map.getLayers().pop();
         }
         this_.requestStations(true);
-        this_.requestBikeTracks();
+        this_.requestBikeTracks(true);
         this_.getAndDrawPosition();
       };
 
@@ -320,7 +315,7 @@ export class HomePage {
    * Draws the stations from locally stored data
    * @param PrevError
    */
-  private drawFromLocalStorage(PrevError) {
+  private alertNoConnection(PrevError) {
     this.alertCtrl.create({
       title: 'Erreur',
       subTitle: 'Veuillez vérifier votre connexion à internet puis cliquez sur le bouton rafraîchir en haut à gauche de la carte',
@@ -355,7 +350,7 @@ export class HomePage {
           self.map.removeLayer(self.bikeTracksVector);
           self.tracksAreDisplayed = false;
         } else {
-          if (typeof self.tracksFeatureCollection !== "undefined" && typeof self.bikeTracksVector === "undefined") {
+          if (typeof self.tracksFeatureCollection !== "undefined") {
             self.bikeTracksVector = new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),

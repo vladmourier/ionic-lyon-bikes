@@ -5,6 +5,7 @@ import {StationWorker} from "../../app/StationWorker";
 import Highcharts from "highcharts";
 import highcharts_export from "highcharts/modules/exporting";
 import {StationService} from "../../model/station/StationService";
+import {BikeTrackService} from "../../model/tracks/BikeTrackService";
 @Component({
   selector: 'page-analytics',
   templateUrl: 'analytics.html'
@@ -14,10 +15,11 @@ export class AnalyticsPage extends StationWorker {
   totalBikeStands;
   private loading: Loading;
   totalAvailableBikes: number;
+  totalTracks: any;
 
 
-  constructor(public navController: NavController, public stationService: StationService,
-                public toastCtrl: ToastController, public loadingCtrl: LoadingController) {
+  constructor(public navController: NavController, public stationService: StationService, public bikeTrackService: BikeTrackService,
+              public toastCtrl: ToastController, public loadingCtrl: LoadingController) {
     super(navController, stationService, toastCtrl);
     highcharts_export(Highcharts)
   }
@@ -38,9 +40,10 @@ export class AnalyticsPage extends StationWorker {
       content: "Analyse du flux d'informations..."
     });
     this.loading.present();
+    this.bikeTrackService.requestTracks().subscribe(featureCollection => this.totalTracks = featureCollection.features.length, error => null);
     this.initStations();
     this.totalBikeStands = this.getTotalBikeStands();
-    this.totalAvailableBikes = this.stations.map(station => station.available_bikes).reduce((a,b) => a+b);
+    this.totalAvailableBikes = this.stations.map(station => station.available_bikes).reduce((a, b) => a + b);
   }
 
   private bankingStationsChart() {
