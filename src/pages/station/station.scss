@@ -1,22 +1,41 @@
 page-detail {
-  .station-navbar{
+  .list-ios {
+    @media all and (min-width: 700px) {
+      margin-top: 0 !important;
+    }
+  }
+  ion-list, .toolbar-content {
+    @media all and (min-width: 700px) {
+      margin-left: 10% !important;
+      margin-right: 10% !important;
+    }
+  }
+  .thumbnail {
+    @media all and (min-width: 700px) {
+      width: initial !important;
+      height: initial !important;
+      max-width: 100px !important;
+      max-height: 100px !important;
+    }
+  }
+  .station-navbar {
     text-align: center;
-    font-weight:bold;
+    font-weight: bold;
     font-size: larger;
     color: #ffffff;
 
-    ion-item{
+    ion-item {
       background-color: inherit;
       border: none inherit;
       color: #ffffff;
-      ion-thumbnail{
-        img{
-          padding-top: 20px;
+      ion-thumbnail {
+        img {
+          padding-top: 12px;
         }
       }
     }
 
-    #header > .item-inner{
+    #header > .item-inner {
       border-bottom: none;
     }
   }
@@ -28,34 +47,39 @@ page-detail {
     }
   }
 
-
   .extras-grid {
     ion-col {
       p {
         font-size: larger;
       }
-      ion-icon{
+      ion-icon {
         font-size: larger;
       }
     }
 
   }
-  .icon-valid{
+  .icon-valid {
     color: #21b94e;
   }
 
-  .icon-invalid{
+  .icon-invalid {
     color: #8f8f8f;
   }
 
-  .last-update{
+  .last-update {
     text-align: center;
     font-size: larger;
 
   }
 
-  .address-second{
+  .address-second {
     color: #8f8f8f;
     padding-left: 17px;
+  }
+  .favbtn {
+    float: right !important;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 5px;
   }
 }
