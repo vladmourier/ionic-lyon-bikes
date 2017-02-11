@@ -2,6 +2,7 @@
  * Created by Vlad on 25/11/2016.
  */
 import {Injectable}     from '@angular/core';
+import {Storage} from '@ionic/storage'
 import {Http, Response} from '@angular/http';
 import {Observable}     from 'rxjs/Observable';
 import 'rxjs/Rx';
@@ -21,16 +22,13 @@ export class StationService {
 
   requestStations(refresh: boolean = false): Observable<any> {
     if (!refresh && typeof StationService._stations !== "undefined") {
-      return Observable.of(StationService._stations).map(value => value).catch(error => {
-        console.log(error);
-        return [];
-      });
+      return Observable.of(StationService._stations);
     } else return this.http.get(this.stationsUrl)
-      .map(this.extractData)
-      .catch(this.handleError);
+      .map(res => this.extractData(res, this))
+      .catch(error => this.requestFromLocalStorage(error, this));
   }
 
-  private extractData(res: Response) {
+  private extractData(res: Response, self) {
     let stations = [];
     let stationsArray = res.json().values;
     for (let i = 0, l = stationsArray.length; i < l; i++) {
@@ -38,19 +36,34 @@ export class StationService {
       stations[station.number] = station;
     }
     StationService._stations = stations;
+    self.storage.set('stations', stations);
     return stations;
   }
 
-  private handleError(error: Response | any) {
+  private requestFromLocalStorage(error: Response | any, self) {
+    //Tries to get the stations from LocalStorage
+    self.storage.get('stations')
+      .then(res => Observable.of(res))
+      .catch(Othererror => {
+        let errMsg = self.parseError([error, Othererror]);
+        return Observable.throw(errMsg);
+      });
+    return Observable.throw(this.parseError([error]));
+  }
+
+  private parseError(errors: any[]) {
     let errMsg: string;
-    if (error instanceof Response) {
-      const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-    } else {
-      errMsg = error.message ? error.message : error.toString();
-    }
-    return Observable.throw(errMsg);
+    errors.forEach((error) => {
+      if (error instanceof Response) {
+        const body = error.json() || '';
+        const err = body.error || JSON.stringify(body);
+        errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+      } else {
+        errMsg = error.message ? error.message : error.toString();
+      }
+      errMsg += "\r\n";
+    });
+    return errMsg
   }
 
   checkFavoritesStorage() {

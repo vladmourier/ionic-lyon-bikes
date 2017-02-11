@@ -13,6 +13,7 @@ export class AnalyticsPage extends StationWorker {
 
   totalBikeStands;
   private loading: Loading;
+  totalAvailableBikes: number;
 
 
   constructor(public navController: NavController, public stationService: StationService,
@@ -38,7 +39,8 @@ export class AnalyticsPage extends StationWorker {
     });
     this.loading.present();
     this.initStations();
-    this.totalBikeStands = this.getTotalBikeStands()
+    this.totalBikeStands = this.getTotalBikeStands();
+    this.totalAvailableBikes = this.stations.map(station => station.available_bikes).reduce((a,b) => a+b);
   }
 
   private bankingStationsChart() {

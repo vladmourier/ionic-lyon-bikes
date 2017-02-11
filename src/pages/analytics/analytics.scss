@@ -5,6 +5,7 @@ page-analytics {
     ion-item {
       @media all and (orientation: landscape) {
         max-width: 50% !important;
+        border: none;
       }
     }
   }

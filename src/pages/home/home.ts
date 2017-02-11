@@ -228,20 +228,6 @@ export class HomePage {
         self.nav.push(StationPage, self.currentStation);
       }
     });
-
-    //adds the stations to local storage
-    this.storage.set('stations', JSON.stringify(this.stations, function (k, v) {
-      if (v instanceof Array) {
-        var o = {};
-        for (var ind in v) {
-          if (v.hasOwnProperty(ind)) {
-            o[ind] = v[ind];
-          }
-        }
-        return o;
-      }
-      return v;
-    }));
   }
 
   /**
@@ -335,29 +321,11 @@ export class HomePage {
    * @param PrevError
    */
   private drawFromLocalStorage(PrevError) {
-    let self = this;
-    if (PrevError)
-      this.errorMessage = <any>PrevError;
-    this.storage.get('stations')
-      .then((res) => {
-          if (res !== null) {
-            let stationDrawer = new StationDrawer();
-            self.stations = JSON.parse(res);
-            //Sets the service array for future use
-            StationService._stations = self.stations;
-            for (let sta in self.stations)
-              self.drawStation(self.stations[sta], stationDrawer)
-
-            self.addLayersToMap(stationDrawer);
-          } else {
-            self.alertCtrl.create({
-              title: 'Erreur',
-              subTitle: 'Veuillez vérifier votre connexion à internet puis cliquez sur le bouton rafraîchir en haut à gauche de la carte',
-              buttons: ["OK"]
-            }).present();
-          }
-        }
-      );
+    this.alertCtrl.create({
+      title: 'Erreur',
+      subTitle: 'Veuillez vérifier votre connexion à internet puis cliquez sur le bouton rafraîchir en haut à gauche de la carte',
+      buttons: ["OK"]
+    }).present();
   }
 
   private drawStation(station, stationDrawer) {
