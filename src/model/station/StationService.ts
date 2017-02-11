@@ -6,12 +6,13 @@ import {Http, Response} from '@angular/http';
 import {Observable}     from 'rxjs/Observable';
 import 'rxjs/Rx';
 import {Station} from "./Station";
+import {Storage} from '@ionic/storage'
 
 @Injectable()
 export class StationService {
   public static _stations: Station[];
   private stationsUrl = 'https://download.data.grandlyon.com/ws/rdata/jcd_jcdecaux.jcdvelov/all.json';  // URL to web API
-  constructor(private http: Http) {
+  constructor(private http: Http, private storage: Storage) {
   }
 
   requestStations(refresh: boolean = false): Observable<any> {
@@ -46,5 +47,40 @@ export class StationService {
       errMsg = error.message ? error.message : error.toString();
     }
     return Observable.throw(errMsg);
+  }
+
+
+
+  isFavorite(a_station):Promise<any> {
+      return new Promise((resolve, reject) => {
+        this.storage.get('favorites').then((favs) => {
+          for (let favname in favs)
+            if (a_station.name == favs[favname]) {
+
+                    console.log('testing favoriteness');
+
+                      resolve(true);
+            }
+          resolve(false);
+        });
+      })
+  }
+
+  addToFavorites(a_station) {
+    this.storage.get('favorites').then((favs) => {
+      for (let favname in favs)
+        if (a_station.name == favs[favname])
+          return;
+      favs.push(a_station.name);
+      this.storage.set('favorites', favs);
+    });
+  }
+
+  removeFromFavorites(a_station) {
+      this.storage.get('favorites').then((favs) => {
+        this.storage.set('favorites', favs.filter((fav) => {
+            return fav != a_station.name;
+        }));
+      });
   }
 }

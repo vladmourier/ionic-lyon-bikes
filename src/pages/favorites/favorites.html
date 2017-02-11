@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Stations Favorites</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-list id="favoritesList">
+    <ion-item *ngFor="let station of favorites" (click)="jumpToStation($event)">
+      <ion-thumbnail item-left>
+        <img src="{{'https://biok03.github.io/bi-velov/images/stations/' + station.number + '.jpg' }}">
+      </ion-thumbnail>
+      <h2>{{ station.name }}</h2>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
