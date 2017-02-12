@@ -1,4 +1,8 @@
 page-analytics {
+  .align-right{
+    position: absolute;
+    right: 0;
+  }
   #chartlist {
     display: flex;
     flex-wrap: wrap;

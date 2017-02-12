@@ -63,7 +63,7 @@ export class FavoritesPage {
           self.navController.parent.select(0);
         });
         stationHTML.setAttribute("tappable", 'true');
-        stationHTML.innerHTML = '<ion-thumbnail item-left><img src="https://biok03.github.io/bi-velov/images/stations/' + station.number + '.jpg"></ion-thumbnail>' +
+        stationHTML.innerHTML = '<ion-thumbnail item-left><img src="assets/stations/' + station.number + '.jpg"></ion-thumbnail>' +
           '<div class="item-inner"><div class="input-wrapper"><ion-label class="label label-md">'
           + station.name + '</ion-label></div></div>';
 
