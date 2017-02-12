@@ -1,3 +1,4 @@
+import {HomePage} from "../../pages/home/home";
 /**
  * Created by Vlad on 25/11/2016.
  */
@@ -31,7 +32,10 @@ export class UserLocation {
   }
 
   getLocation() {
-      var temp = ol.proj.transform([this.lng, this.lat], 'EPSG:4326', 'EPSG:3857');
+    let temp;
+    if(typeof this.lng !== "undefined" || typeof this.lat !== "undefined")
+       temp = ol.proj.transform([this.lng, this.lat], 'EPSG:4326', 'EPSG:3857');
+    else temp = HomePage.INITIAL_COORDINATES;
       //console.log(temp)
       return temp;
   }
