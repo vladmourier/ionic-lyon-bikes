@@ -9,6 +9,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 import {StationPage} from "../pages/station/station";
 import {StationService} from "../model/station/StationService";
 import {BikeTrackService} from "../model/tracks/BikeTrackService";
+import {Storage} from "@ionic/storage";
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {BikeTrackService} from "../model/tracks/BikeTrackService";
   ],
   providers: [
     StationService,
-    BikeTrackService
+    BikeTrackService,
+    Storage
   ]
 })
 export class AppModule {}

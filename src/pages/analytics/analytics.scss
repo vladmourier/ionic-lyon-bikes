@@ -3,7 +3,7 @@ page-analytics {
     display: flex;
     flex-wrap: wrap;
     ion-item {
-      @media all and (orientation: landscape) {
+      @media all and (min-width: 700px) {
         max-width: 50% !important;
         border: none;
       }
