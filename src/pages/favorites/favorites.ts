@@ -36,7 +36,6 @@ export class FavoritesPage {
     else if (event.target.localName === "ion-thumbnail")
       clickedStationName = event.target.nextSibling.innerText.trim();
     else clickedStationName = event.target.innerText.trim();
-
     let regex = new RegExp(clickedStationName, 'i');
     HomePage.stationToGo = this.favorites
       .find((station) => regex.test(station.name));
@@ -55,15 +54,9 @@ export class FavoritesPage {
         let station = this.favorites[i];
         let stationHTML = document.createElement('ion-item');
         stationHTML.className = "item-block item item-md my-dir";
-        stationHTML.addEventListener('click', (event: any) => {
-          let clickedStationName = event.target.innerText.trim();
-          let regex = new RegExp(clickedStationName, 'i');
-          HomePage.stationToGo = self.favorites
-            .find((station) => regex.test(station.name));
-          self.navController.parent.select(0);
-        });
+        stationHTML.addEventListener('click', (event: any) => self.jumpToStation(event));
         stationHTML.setAttribute("tappable", 'true');
-        stationHTML.innerHTML = '<ion-thumbnail item-left><img src="assets/stations/' + station.number + '.jpg"></ion-thumbnail>' +
+        stationHTML.innerHTML = '<ion-thumbnail item-left><img class="list-img" src="assets/stations/' + station.number + '.jpg"></ion-thumbnail>' +
           '<div class="item-inner"><div class="input-wrapper"><ion-label class="label label-md">'
           + station.name + '</ion-label></div></div>';
 

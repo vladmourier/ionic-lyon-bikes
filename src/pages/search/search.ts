@@ -63,13 +63,7 @@ export class SearchPage extends StationWorker {
       let station = this.stations[i];
       let stationHTML = document.createElement('ion-item');
       stationHTML.className = "item-block item item-md my-dir";
-      stationHTML.addEventListener('click', (event: any) => {
-        let clickedStationName = event.target.innerText.trim();
-        let regex = new RegExp(clickedStationName, 'i');
-        HomePage.stationToGo = self.stations
-          .find((station) => regex.test(station.name));
-        self.navController.parent.select(0);
-      });
+      stationHTML.addEventListener('click', (event: any) => self.jumpToStation(event));
       stationHTML.setAttribute("tappable", 'true');
       stationHTML.innerHTML = '<ion-thumbnail item-left><img class="list-img" src="assets/stations/' + station.number + '.jpg"></ion-thumbnail>' +
         '<div class="item-inner"><div class="input-wrapper"><ion-label class="label label-md">'

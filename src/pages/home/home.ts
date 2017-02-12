@@ -248,7 +248,6 @@ export class HomePage {
         }
         this_.requestStations(true);
         this_.requestBikeTracks(true);
-        this_.getAndDrawPosition();
       };
 
 
@@ -351,6 +350,8 @@ export class HomePage {
           self.tracksAreDisplayed = false;
         } else {
           if (typeof self.tracksFeatureCollection !== "undefined") {
+            let load = self.loadingCtrl.create({content: "Nous dessinons les pistes cyclables..."});
+            load.present();
             self.bikeTracksVector = new ol.layer.Vector({
               source: new ol.source.Vector({
                 features: (new ol.format.GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(self.tracksFeatureCollection),
@@ -364,6 +365,7 @@ export class HomePage {
               })
             });
             self.map.addLayer(self.bikeTracksVector);
+            load.dismiss();
             self.tracksAreDisplayed = true;
           } else self.toastCtrl.create({
             message: "Impossible de récupérer les pistes cyclables. Connectez vous à internet et cliquez sur le bouton rafraîchir",
@@ -373,6 +375,7 @@ export class HomePage {
       };
 
       button.addEventListener('click', displayBikeTracks, false);
+      // button.addEventListener('touchstart', displayBikeTracks, false);
 
       let element = document.createElement('div');
       element.className = 'button-biketracks ol-unselectable ol-control';
